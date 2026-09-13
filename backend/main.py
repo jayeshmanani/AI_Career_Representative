@@ -16,12 +16,22 @@ load_dotenv()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 client = Groq(api_key=GROQ_API_KEY) if GROQ_API_KEY else None
-model = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
+PRIMARY_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
+# Auto-fallback chain when hitting rate limits (TPD / TPM 429s)
+FALLBACK_MODELS = [
+    PRIMARY_MODEL,
+    "openai/gpt-oss-20b",
+    "qwen/qwen3.6-27b",
+    "qwen/qwen3.8-27b",
+    "groq/compound-mini",
+]
+FALLBACK_MODELS = list(dict.fromkeys(FALLBACK_MODELS))
+model = PRIMARY_MODEL
 
 app = FastAPI(
     title="AI Engineering - Candidate Resume Assistant",
-    description="Interactive AI Assistant representing a candidate's resume with streaming chat responses",
-    version="0.2.0",
+    description="Interactive AI Assistant representing a candidate's resume with streaming chat responses and auto-failover",
+    version="0.2.1",
 )
 
 # Enable CORS for local development and web frontends
@@ -121,19 +131,30 @@ def parse_resume_with_llm(resume_text: str) -> Resume:
     """
     user_prompt = f"Parse the following resume:\n\n{resume_text}"
 
-    response = client.chat.completions.create(
-        model=model,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ],
-        response_format={"type": "json_object"},
-        max_completion_tokens=4096,
-    )
+    last_error = None
+    for candidate_model in FALLBACK_MODELS:
+        try:
+            response = client.chat.completions.create(
+                model=candidate_model,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+                response_format={"type": "json_object"},
+                max_tokens=4096,
+            )
+            raw_output = response.choices[0].message.content
+            data = json.loads(raw_output)
+            return Resume(**data)
+        except Exception as exc:
+            err_msg = str(exc).lower()
+            if "rate limit" in err_msg or "429" in err_msg:
+                print(f"[Resume Parser Failover] Model {candidate_model} rate-limited. Trying next fallback model...")
+                last_error = exc
+                continue
+            raise exc
 
-    raw_output = response.choices[0].message.content
-    data = json.loads(raw_output)
-    return Resume(**data)
+    raise RuntimeError(f"All fallback models failed for resume parsing. Last error: {last_error}")
 
 
 @lru_cache(maxsize=1)
@@ -211,24 +232,44 @@ HANDLING UNLISTED SKILLS & TECHNOLOGIES (TRANSFERABLE SKILLS PRINCIPLE):
 
     messages.append({"role": "user", "content": question.strip()})
 
+    if not client:
+        yield "Error: GROQ_API_KEY environment variable is not configured. Please set it in your .env file."
+        return
+
+    stream = None
+    active_model = None
+
+    for candidate_model in FALLBACK_MODELS:
+        try:
+            stream = client.chat.completions.create(
+                model=candidate_model,
+                messages=messages,
+                stream=True,
+                max_tokens=1500,
+            )
+            active_model = candidate_model
+            break
+        except Exception as exc:
+            err_msg = str(exc).lower()
+            if "rate limit" in err_msg or "429" in err_msg or "rate_limit_exceeded" in err_msg:
+                print(f"[Model Failover] Model {candidate_model} rate-limited. Trying next fallback model...")
+                continue
+            else:
+                yield f"\n\n[Error from {candidate_model}: {str(exc)}]"
+                return
+
+    if not stream:
+        yield f"\n\n[Service Notice: All available Groq models ({', '.join(FALLBACK_MODELS)}) temporarily reached their rate limits. Please retry in a few moments.]"
+        return
+
     try:
-        if not client:
-            yield "Error: GROQ_API_KEY environment variable is not configured. Please set it in your .env file."
-            return
-
-        stream = client.chat.completions.create(
-            model=model,
-            messages=messages,
-            stream=True,
-        )
-
         for chunk in stream:
             delta = chunk.choices[0].delta.content if chunk.choices else None
             if delta:
                 yield delta
 
     except Exception as exc:
-        yield f"\n\n[Error while generating response: {str(exc)}]"
+        yield f"\n\n[Error during generation: {str(exc)}]"
 
 
 # Endpoints
@@ -247,6 +288,8 @@ def health():
     return {
         "status": "healthy",
         "model": model,
+        "primary_model": PRIMARY_MODEL,
+        "fallback_models": FALLBACK_MODELS,
         "resume_path_exists": RESUME_PATH.exists(),
         "cache_exists": CACHE_PATH.exists(),
         "groq_configured": bool(GROQ_API_KEY),

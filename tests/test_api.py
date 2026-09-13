@@ -28,7 +28,8 @@ def test_api_profile():
     assert "email" in data
     assert isinstance(data["skills"], list)
     assert len(data["skills"]) > 0
-    assert "Python" in data["skills"] or any("python" in s.lower() for s in data["skills"])
+    assert "Python" in data["skills"] or any(
+        "python" in s.lower() for s in data["skills"])
 
 
 def test_api_resume():
@@ -86,3 +87,9 @@ def test_chat_transferable_skills_for_unlisted_tech():
     assert "python" in answer or "c" in answer or "transferable" in answer or "adapt" in answer or "learn" in answer
 
 
+def test_health_fallback_models():
+    response = client.get("/health")
+    assert response.status_code == 200
+    data = response.json()
+    assert "fallback_models" in data
+    assert len(data["fallback_models"]) >= 2
