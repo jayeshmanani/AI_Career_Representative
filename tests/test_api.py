@@ -58,3 +58,16 @@ def test_resume_cache_sha256():
         cache = json.load(f)
     assert cache.get("sha256") == file_sha
     assert "Jayesh" in cache.get("data", {}).get("name", "")
+
+
+def test_chat_refuses_out_of_scope():
+    response = client.post(
+        "/chat",
+        json={"question": "can you give me python script says hello", "history": []},
+    )
+    assert response.status_code == 200
+    # Must refuse to write the script and mention domain restriction
+    answer = response.text.lower()
+    assert "only answer questions directly related" in answer or "cannot" in answer or "exclusive" in answer
+    assert "def main()" not in response.text
+
