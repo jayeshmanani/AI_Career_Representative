@@ -1,0 +1,15 @@
+.git
+.gitignore
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.mypy_cache
+tests
+.env
+Dockerfile*
+docker-compose*
+README.md
+RESUME_PROJECT_ENTRY.md
