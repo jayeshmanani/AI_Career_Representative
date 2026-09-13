@@ -129,12 +129,13 @@
 
       .shell {
         display: grid;
-        grid-template-columns: minmax(0, 1fr);
-        gap: 0;
+        grid-template-columns: minmax(0, 1fr) 288px;
+        gap: 12px;
         min-height: 0;
       }
 
-      .chat-panel {
+      .chat-panel,
+      .side-panel {
         border: 1px solid var(--border);
         border-radius: 22px;
         background: linear-gradient(180deg, var(--panel), rgba(10, 16, 28, 0.96));
@@ -148,6 +149,66 @@
         min-height: 0;
         height: 100%;
         overflow: hidden;
+      }
+
+      .side-panel {
+        display: grid;
+        grid-template-rows: auto auto 1fr;
+        gap: 12px;
+        min-height: 0;
+        padding: 14px;
+        overflow: hidden;
+      }
+
+      .side-panel h2,
+      .side-panel h3 {
+        margin: 0;
+      }
+
+      .side-panel h2 {
+        font-size: 0.98rem;
+      }
+
+      .side-panel h3 {
+        font-size: 0.9rem;
+        color: #d6e6f9;
+      }
+
+      .side-panel p,
+      .side-panel li {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.55;
+        font-size: 0.88rem;
+      }
+
+      .side-panel ul {
+        margin: 0;
+        padding-left: 18px;
+        display: grid;
+        gap: 8px;
+      }
+
+      .side-card {
+        padding: 12px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .side-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .side-tag {
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(79, 209, 197, 0.18);
+        background: rgba(79, 209, 197, 0.07);
+        color: #d9fffb;
+        font-size: 0.8rem;
       }
 
       .chat-header {
@@ -485,6 +546,14 @@
           min-height: 0;
         }
 
+        .shell {
+          grid-template-columns: minmax(0, 1fr);
+        }
+
+        .side-panel {
+          display: none;
+        }
+
         .messages {
           padding: 18px 16px 14px;
         }
@@ -568,6 +637,35 @@
             </form>
           </div>
         </article>
+
+        <aside class="side-panel" aria-label="Resume chat tips">
+          <div class="side-card">
+            <h2>Quick help</h2>
+            <p>
+              Use the chat for resume questions only. The first message explains how
+              to ask, so this rail stays short and out of the way.
+            </p>
+          </div>
+
+          <div class="side-card">
+            <h3>Try asking</h3>
+            <ul>
+              <li>What are the candidate’s strongest skills?</li>
+              <li>Summarize the recent work experience.</li>
+              <li>Which tools appear most often?</li>
+            </ul>
+          </div>
+
+          <div class="side-card">
+            <h3>Focus</h3>
+            <div class="side-tags">
+              <span class="side-tag">Experience</span>
+              <span class="side-tag">Skills</span>
+              <span class="side-tag">Projects</span>
+              <span class="side-tag">Certifications</span>
+            </div>
+          </div>
+        </aside>
       </section>
     </div>
 
