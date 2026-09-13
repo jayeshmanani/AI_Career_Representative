@@ -68,20 +68,20 @@
         width: 100vw;
         max-width: none;
         margin: 0 auto;
-        padding: 20px 24px 24px;
+        padding: 16px 18px 18px;
         overflow: hidden;
       }
 
       .hero {
         display: grid;
-        grid-template-columns: minmax(0, 1.4fr) auto;
-        gap: 16px 24px;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 12px 16px;
         align-items: center;
-        margin-bottom: 14px;
-        padding: 14px 18px 14px 20px;
+        margin-bottom: 12px;
+        padding: 12px 16px;
         border: 1px solid var(--border);
-        border-radius: 24px;
-        background: linear-gradient(180deg, rgba(15, 24, 39, 0.92), rgba(9, 15, 27, 0.78));
+        border-radius: 20px;
+        background: rgba(9, 15, 27, 0.82);
         box-shadow: var(--shadow);
         backdrop-filter: blur(18px);
         animation: lift-in 420ms ease-out;
@@ -89,7 +89,7 @@
 
       .hero-copy {
         display: grid;
-        gap: 8px;
+        gap: 6px;
       }
 
       .hero-meta {
@@ -115,18 +115,18 @@
 
       .hero h1 {
         margin: 0;
-        max-width: 18ch;
-        font-size: clamp(1.7rem, 2.2vw, 2.7rem);
-        line-height: 1.1;
+        max-width: 20ch;
+        font-size: clamp(1.35rem, 1.7vw, 2rem);
+        line-height: 1.08;
         letter-spacing: -0.05em;
       }
 
       .hero p {
-        max-width: 72ch;
+        max-width: 86ch;
         margin: 0;
         color: var(--muted);
-        font-size: 0.95rem;
-        line-height: 1.55;
+        font-size: 0.9rem;
+        line-height: 1.45;
       }
 
       .status-row {
@@ -134,19 +134,19 @@
         flex-wrap: wrap;
         gap: 10px;
         align-items: center;
-        margin-top: 2px;
+        margin-top: 0;
       }
 
       .status-pill {
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        padding: 8px 12px;
+        padding: 7px 11px;
         border: 1px solid var(--border);
         border-radius: 999px;
         background: rgba(255, 255, 255, 0.04);
         color: var(--muted);
-        font-size: 0.88rem;
+        font-size: 0.84rem;
       }
 
       .status-dot {
@@ -159,15 +159,14 @@
 
       .shell {
         display: grid;
-        grid-template-columns: minmax(0, 2.15fr) minmax(340px, 0.85fr);
-        gap: 14px;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
         min-height: 0;
       }
 
-      .chat-panel,
-      .side-panel {
+      .chat-panel {
         border: 1px solid var(--border);
-        border-radius: 30px;
+        border-radius: 24px;
         background: linear-gradient(180deg, var(--panel), rgba(10, 16, 28, 0.96));
         box-shadow: var(--shadow);
         backdrop-filter: blur(18px);
@@ -186,7 +185,7 @@
         align-items: center;
         justify-content: space-between;
         gap: 16px;
-        padding: 16px 22px;
+        padding: 14px 18px;
         border-bottom: 1px solid var(--border);
         background: rgba(255, 255, 255, 0.02);
       }
@@ -197,48 +196,51 @@
       }
 
       .chat-title strong {
-        font-size: 1rem;
+        font-size: 0.98rem;
         letter-spacing: 0.02em;
       }
 
       .chat-title span {
         color: var(--muted);
-        font-size: 0.88rem;
+        font-size: 0.84rem;
       }
 
       .chip {
-        padding: 8px 12px;
+        padding: 7px 11px;
         border-radius: 999px;
         border: 1px solid rgba(79, 209, 197, 0.2);
         background: rgba(79, 209, 197, 0.08);
         color: #d6fffb;
-        font-size: 0.86rem;
+        font-size: 0.82rem;
         white-space: nowrap;
       }
 
       .messages {
         display: flex;
         flex-direction: column;
-        gap: 14px;
-        padding: 24px 28px 22px;
+        gap: 12px;
+        padding: 22px 24px 18px;
         min-height: 0;
         overflow-y: auto;
         scroll-behavior: smooth;
+        background:
+          radial-gradient(circle at top, rgba(79, 209, 197, 0.04), transparent 24%),
+          radial-gradient(circle at bottom right, rgba(255, 184, 107, 0.03), transparent 18%);
       }
 
       .message {
-        max-width: min(980px, 96%);
-        padding: 18px 20px;
+        max-width: min(980px, 92%);
+        padding: 16px 18px;
         border-radius: 20px;
-        line-height: 1.75;
-        font-size: 1.02rem;
+        line-height: 1.7;
+        font-size: 0.98rem;
         word-wrap: break-word;
         border: 1px solid transparent;
       }
 
       .message-content {
         display: grid;
-        gap: 14px;
+        gap: 12px;
       }
 
       .message-content > :first-child {
@@ -251,37 +253,37 @@
 
       .message-content p {
         margin: 0;
-        line-height: 1.75;
+        line-height: 1.72;
       }
 
       .message-content h3,
       .message-content h4 {
         margin: 0;
-        font-size: 1.06rem;
+        font-size: 1rem;
         line-height: 1.4;
       }
 
       .message-content ul,
       .message-content ol {
         margin: 0;
-        padding-left: 1.25rem;
+        padding-left: 1.15rem;
         display: grid;
-        gap: 0.55rem;
+        gap: 0.45rem;
       }
 
       .message-content table {
         width: 100%;
         border-collapse: collapse;
-        border-radius: 16px;
+        border-radius: 14px;
         overflow: hidden;
         border: 1px solid rgba(255, 255, 255, 0.1);
         background: rgba(255, 255, 255, 0.03);
-        font-size: 0.98rem;
+        font-size: 0.95rem;
       }
 
       .message-content th,
       .message-content td {
-        padding: 12px 14px;
+        padding: 10px 12px;
         vertical-align: top;
         text-align: left;
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -349,16 +351,16 @@
       }
 
       .composer {
-        padding: 16px 22px 20px;
+        padding: 14px 18px 18px;
         border-top: 1px solid var(--border);
-        background: rgba(255, 255, 255, 0.02);
+        background: rgba(255, 255, 255, 0.03);
       }
 
       .suggestions {
         display: flex;
         flex-wrap: wrap;
         gap: 10px;
-        margin-bottom: 16px;
+        margin-bottom: 12px;
       }
 
       .suggestion {
@@ -366,7 +368,7 @@
         background: rgba(255, 255, 255, 0.04);
         color: var(--text);
         border-radius: 999px;
-        padding: 10px 16px;
+        padding: 9px 14px;
         font: inherit;
         cursor: pointer;
         transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
@@ -397,17 +399,17 @@
 
       textarea {
         width: 100%;
-        min-height: 64px;
-        max-height: 220px;
+        min-height: 62px;
+        max-height: 180px;
         resize: vertical;
-        padding: 18px 20px;
-        border-radius: 20px;
+        padding: 16px 18px;
+        border-radius: 18px;
         border: 1px solid rgba(255, 255, 255, 0.14);
         background: rgba(4, 8, 15, 0.8);
         color: var(--text);
         font: inherit;
-        line-height: 1.65;
-        font-size: 1.02rem;
+        line-height: 1.6;
+        font-size: 0.98rem;
         outline: none;
       }
 
@@ -417,10 +419,10 @@
       }
 
       .send-btn {
-        min-width: 132px;
+        min-width: 116px;
         border: 0;
-        border-radius: 20px;
-        padding: 18px 20px;
+        border-radius: 18px;
+        padding: 16px 18px;
         font: inherit;
         font-weight: 700;
         color: #041019;
@@ -438,69 +440,6 @@
       .send-btn:disabled {
         cursor: not-allowed;
         opacity: 0.65;
-      }
-
-      .side-panel {
-        padding: 16px;
-        display: grid;
-        gap: 16px;
-        align-content: start;
-        min-height: 0;
-        overflow: auto;
-      }
-
-      .panel-block {
-        padding: 16px 16px 14px;
-        border-radius: var(--radius-lg);
-        border: 1px solid var(--border);
-        background: rgba(255, 255, 255, 0.03);
-      }
-
-      .panel-block h2,
-      .panel-block h3 {
-        margin: 0 0 10px;
-      }
-
-      .panel-block h2 {
-        font-size: 1.05rem;
-      }
-
-      .panel-block h3 {
-        font-size: 0.96rem;
-        color: #d6e6f9;
-      }
-
-      .panel-block p,
-      .panel-block li {
-        color: var(--muted);
-        line-height: 1.7;
-      }
-
-      .panel-block ul {
-        margin: 10px 0 0;
-        padding-left: 18px;
-      }
-
-      .checklist {
-        display: grid;
-        gap: 10px;
-      }
-
-      .check-item {
-        display: flex;
-        gap: 10px;
-        align-items: flex-start;
-        color: var(--muted);
-      }
-
-      .check-bullet {
-        width: 10px;
-        height: 10px;
-        margin-top: 7px;
-        border-radius: 50%;
-        background: var(--accent-2);
-        box-shadow: 0 0 0 5px rgba(255, 184, 107, 0.12);
-        flex: none;
       }
 
       .typing {
@@ -576,36 +515,16 @@
           justify-content: flex-start;
         }
 
-        .shell {
-          grid-template-columns: 1fr;
-        }
-
-        .side-panel {
-          order: -1;
-          max-height: 32vh;
-        }
-
         .chat-panel {
           min-height: 0;
         }
-      }
 
-      @media (max-width: 640px) {
-        .page {
-          padding: 14px;
-        }
-
-        .hero,
-        .side-panel,
-        .composer,
-        .chat-header,
         .messages {
-          padding-left: 16px;
-          padding-right: 16px;
+          padding: 18px 16px 16px;
         }
 
-        .hero {
-          padding-top: 22px;
+        .composer {
+          padding: 12px 14px 14px;
         }
 
         form {
@@ -621,21 +540,40 @@
           max-width: 100%;
         }
       }
+
+      @media (max-width: 640px) {
+        .page {
+          padding: 12px;
+        }
+
+        .hero {
+          padding: 10px 12px;
+        }
+
+        .chat-header {
+          padding: 12px 14px;
+        }
+
+        .messages {
+          gap: 10px;
+        }
+      }
     </style>
   </head>
   <body>
     <div class="page">
       <section class="hero">
-        <div class="eyebrow">Resume Assistant</div>
-        <h1>Chat with the resume data in a clean, focused UI.</h1>
-        <p>
-          Ask questions about the candidate’s background, skills, projects,
-          certifications, or experience. The assistant answers strictly from the
-          parsed resume behind the FastAPI backend.
-        </p>
-        <div class="status-row">
-          <div class="status-pill"><span class="status-dot"></span><span>Backend ready at <strong>/chat</strong></span></div>
-          <div class="status-pill">Press <strong>Enter</strong> to send, <strong>Shift+Enter</strong> for a new line</div>
+        <div class="hero-copy">
+          <div class="eyebrow">Resume Assistant</div>
+          <h1>Chat with the resume data in a focused, readable workspace.</h1>
+          <p>
+            Ask about experience, skills, projects, certifications, or education.
+            The chat stays on one screen, with the message area taking priority.
+          </p>
+        </div>
+        <div class="hero-meta">
+          <div class="status-pill"><span class="status-dot"></span><span>Streaming via <strong>/chat</strong></span></div>
+          <div class="status-pill">Enter to send · Shift+Enter for a new line</div>
         </div>
       </section>
 
@@ -668,36 +606,6 @@
             </form>
           </div>
         </article>
-
-        <aside class="side-panel">
-          <div class="panel-block">
-            <h2>What this page does</h2>
-            <p>
-              This is a direct chat interface for the backend endpoint. It sends your
-              question to <strong>/chat</strong> and renders the assistant response in the
-              same window.
-            </p>
-          </div>
-
-          <div class="panel-block">
-            <h3>Best questions to try</h3>
-            <div class="checklist">
-              <div class="check-item"><span class="check-bullet"></span><span>“Tell me about the candidate’s experience in one paragraph.”</span></div>
-              <div class="check-item"><span class="check-bullet"></span><span>“Which tools or technologies are mentioned?”</span></div>
-              <div class="check-item"><span class="check-bullet"></span><span>“What job titles or roles appear in the resume?”</span></div>
-              <div class="check-item"><span class="check-bullet"></span><span>“Which certifications are listed?”</span></div>
-            </div>
-          </div>
-
-          <div class="panel-block">
-            <h3>Behavior</h3>
-            <ul>
-              <li>No hallucinations: the model should only answer from the parsed resume.</li>
-              <li>If a detail is missing, it should say the information is unavailable.</li>
-              <li>Responses appear as chat bubbles with loading feedback.</li>
-            </ul>
-          </div>
-        </aside>
       </section>
     </div>
 
