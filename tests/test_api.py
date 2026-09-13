@@ -36,6 +36,7 @@ def test_api_resume():
     response = client.get("/api/resume")
     assert response.status_code == 200
     assert "application/pdf" in response.headers.get("content-type", "")
+    assert "inline" in response.headers.get("content-disposition", "").lower()
     assert len(response.content) > 10000
 
 

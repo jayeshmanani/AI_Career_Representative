@@ -348,6 +348,7 @@ def download_resume():
         RESUME_PATH,
         media_type="application/pdf",
         filename=RESUME_PATH.name,
+        content_disposition_type="inline",
     )
 
 
