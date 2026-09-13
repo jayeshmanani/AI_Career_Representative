@@ -409,11 +409,29 @@
     }
 
     .bubble-content h3,
-    .bubble-content h4 {
-      margin: 4px 0 0;
-      font-size: 0.98rem;
+    .bubble-content h4,
+    .bubble-content h5,
+    .bubble-content h6 {
+      margin: 8px 0 4px;
       font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .bubble-content h3 {
+      font-size: 1.05rem;
+      color: #7dd3fc;
+    }
+
+    .bubble-content h4 {
+      font-size: 0.98rem;
+      color: #bae6fd;
+    }
+
+    .bubble-content h5,
+    .bubble-content h6 {
+      font-size: 0.9rem;
       color: #e2e8f0;
+      letter-spacing: 0.02em;
     }
 
     .bubble-content ul,
@@ -975,10 +993,10 @@
           continue;
         }
 
-        // Heading
-        const headingMatch = line.match(/^(#{1,3})\s+(.+)$/);
+        // Heading (supports # through ######)
+        const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
         if (headingMatch) {
-          const level = headingMatch[1].length + 2;
+          const level = Math.min(headingMatch[1].length + 2, 6);
           blocks.push(`<h${level}>${formatInline(headingMatch[2])}</h${level}>`);
           i++;
           continue;
