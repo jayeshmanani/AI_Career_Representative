@@ -8,20 +8,20 @@ An intelligent, interactive AI assistant representing **Jayesh Manani** (AI & Cl
 
 ```mermaid
 flowchart TD
-    User["Recruiter / Hiring Manager"] -->|Browser UI| Frontend["Frontend (Vanilla HTML5 / CSS3 / ES6+)"]
-    Frontend -->|GET /api/profile| APIProfile["Candidate Profile & Skills"]
-    Frontend -->|GET /api/resume| APIDownload["Resume PDF Stream"]
-    Frontend -->|POST /chat (Streaming)| APIChat["FastAPI Streaming Engine"]
+    User["Recruiter / Hiring Manager"] -->|"Browser UI"| Frontend["Frontend (Vanilla HTML5 / CSS3 / ES6+)"]
+    Frontend -->|"GET /api/profile"| APIProfile["Candidate Profile & Skills"]
+    Frontend -->|"GET /api/resume"| APIDownload["Resume PDF Stream"]
+    Frontend -->|"POST /chat (Streaming)"| APIChat["FastAPI Streaming Engine"]
 
     subgraph Backend ["FastAPI Core Services"]
         APIChat --> Guardrails["Prompt Injection & Grounding Guardrails"]
         Guardrails --> GroqLLM["Groq LLM (openai/gpt-oss-120b)"]
         APIProfile --> DiskCache["Persistent Resume Cache (SHA-256 Validated)"]
-        DiskCache -.->|Cache Miss| PDFParser["pypdf Parser + Groq Extraction"]
+        DiskCache -.->|"Cache Miss"| PDFParser["pypdf Parser + Groq Extraction"]
         PDFParser --> DiskCache
     end
 
-    GroqLLM -->|Token Chunks| Frontend
+    GroqLLM -->|"Token Chunks"| Frontend
 ```
 
 ---
@@ -131,9 +131,12 @@ uv run pytest tests/ -v
 ```
 
 The test suite covers:
-- `/health` service availability
+- `/health` service availability and fallback model enumeration
 - `/` HTML delivery
-- `/api/profile` data structure and integrity
-- `/api/resume` PDF streaming
+- `/api/profile` data structure, technical skills, and HR behavioral profiles
+- `/api/resume` & `/api/resume.pdf` inline PDF streaming (`Content-Disposition: inline`)
+- `/api/resume?download=true` explicit file attachment download
 - `/chat` input validation (empty / whitespace rejection)
-- SHA-256 disk cache integrity
+- Context-aware transferable skills evaluation for unlisted technologies
+- Multi-model automatic rate-limit failover logic
+- SHA-256 disk cache integrity verification
