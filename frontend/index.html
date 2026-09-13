@@ -455,6 +455,12 @@
       border-bottom: 1px solid var(--border);
     }
 
+    .bubble-content td br {
+      display: block;
+      margin-top: 5px;
+      content: "";
+    }
+
     .bubble-content th {
       background: rgba(255, 255, 255, 0.06);
       font-weight: 600;
@@ -939,14 +945,26 @@
 
     function formatInline(text) {
       return text
+        .replace(/&lt;br\s*\/?&gt;/gi, "<br />")
+        .replace(/(<br\s*\/?>\s*)+$/gi, "")
+        .replace(/^(\s*<br\s*\/?>)+/gi, "")
         .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
         .replace(/__(.+?)__/g, "<strong>$1</strong>")
         .replace(/`([^`]+)`/g, "<code>$1</code>")
         .replace(/\*(.+?)\*/g, "<em>$1</em>");
     }
 
+    function preprocessRawHtml(raw) {
+      return (raw || "")
+        .replace(/<\/?(ul|ol)>/gi, "")
+        .replace(/<li>/gi, "\n- ")
+        .replace(/<\/li>/gi, "")
+        .replace(/<\/?p>/gi, "\n\n");
+    }
+
     function renderMarkdown(rawText) {
-      const lines = rawText.split(/\r?\n/).map(escapeHtml);
+      const cleanText = preprocessRawHtml(rawText);
+      const lines = cleanText.split(/\r?\n/).map(escapeHtml);
       const blocks = [];
       let i = 0;
 
