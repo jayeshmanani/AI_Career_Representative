@@ -828,6 +828,17 @@
               Summarize Experience
             </button>
             <button class="btn-suggestion" type="button"
+              data-prompt="What are Jayesh's greatest professional strengths?">
+              Core Strengths
+            </button>
+            <button class="btn-suggestion" type="button"
+              data-prompt="What are Jayesh's weaknesses and how is he working to improve them?">
+              Weakness & Growth
+            </button>
+            <button class="btn-suggestion" type="button" data-prompt="Why should we hire Jayesh Manani?">
+              Why Hire Jayesh?
+            </button>
+            <button class="btn-suggestion" type="button"
               data-prompt="What is Jayesh's experience with FastAPI, Python, and microservices?">
               Backend & Python Stack
             </button>
@@ -902,13 +913,16 @@
         </div>
 
         <!-- Career Highlights -->
+        <!-- HR & Behavioral Focus -->
         <div class="side-card">
-          <h3>Recent Positions</h3>
-          <div id="experience-list" class="exp-list">
-            <div class="exp-item">
-              <div class="exp-role">AI & Cloud Engineer</div>
-              <div class="exp-company">Enterprise Production Systems</div>
-            </div>
+          <h3>HR & Behavioral Prep</h3>
+          <div class="skills-cloud">
+            <button class="skill-pill" type="button" onclick="askHR('strengths')">Core Strengths</button>
+            <button class="skill-pill" type="button" onclick="askHR('weaknesses')">Weakness & Growth</button>
+            <button class="skill-pill" type="button" onclick="askHR('conflict')">Teamwork & Conflict</button>
+            <button class="skill-pill" type="button" onclick="askHR('pressure')">Handling Pressure</button>
+            <button class="skill-pill" type="button" onclick="askHR('why_hire')">Why Hire Him?</button>
+            <button class="skill-pill" type="button" onclick="askHR('career_vision')">3-5 Year Vision</button>
           </div>
         </div>
       </aside>
@@ -1349,6 +1363,20 @@
 
     window.askAboutSkill = function (skillName) {
       const query = `What is Jayesh's experience and background with ${skillName}?`;
+      questionInput.value = query;
+      sendQuestion(query);
+    };
+
+    window.askHR = function (topic) {
+      const hrPrompts = {
+        strengths: "What are Jayesh's greatest professional strengths and core engineering differentiators?",
+        weaknesses: "What are Jayesh's weaknesses or growth areas, and how does he proactively manage them?",
+        conflict: "How does Jayesh approach teamwork, code reviews, and resolving technical disagreements?",
+        pressure: "How does Jayesh handle tight deadlines, high pressure, and unexpected blockers?",
+        why_hire: "Why should we hire Jayesh Manani for an AI or Cloud engineering position?",
+        career_vision: "What are Jayesh's career goals and motivation for the next 3 to 5 years?",
+      };
+      const query = hrPrompts[topic] || `Tell me about Jayesh's approach to ${topic}.`;
       questionInput.value = query;
       sendQuestion(query);
     };

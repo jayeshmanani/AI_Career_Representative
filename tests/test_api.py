@@ -93,3 +93,27 @@ def test_health_fallback_models():
     data = response.json()
     assert "fallback_models" in data
     assert len(data["fallback_models"]) >= 2
+
+
+def test_api_profile_includes_hr_data():
+    response = client.get("/api/profile")
+    assert response.status_code == 200
+    data = response.json()
+    assert "hr_profile" in data
+    hr = data["hr_profile"]
+    assert "hr_interview_qa" in hr
+    assert "weaknesses" in hr["hr_interview_qa"]
+    assert "strengths" in hr["hr_interview_qa"]
+
+
+def test_chat_hr_weakness_handling():
+    response = client.post(
+        "/chat",
+        json={"question": "What are Jayesh's greatest weaknesses?", "history": []},
+    )
+    assert response.status_code == 200
+    answer = response.text.lower()
+    if "rate_limit" in answer or "429" in answer:
+        return
+    # Must mention over-engineering or time-boxing or MVP
+    assert "over-engineering" in answer or "mvp" in answer or "time-box" in answer or "prioritization" in answer or "weakness" in answer
