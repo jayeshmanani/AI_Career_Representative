@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resume Chat</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #08111f;
+        --bg-soft: rgba(14, 24, 41, 0.8);
+        --panel: rgba(12, 20, 35, 0.92);
+        --panel-strong: rgba(17, 29, 48, 0.96);
+        --text: #f4f7fb;
+        --muted: #9fb0c5;
+        --border: rgba(169, 193, 224, 0.16);
+        --shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+        --accent: #4fd1c5;
+        --accent-2: #ffb86b;
+        --user: linear-gradient(135deg, #4fd1c5 0%, #38bdf8 100%);
+        --assistant: rgba(255, 255, 255, 0.06);
+        --radius-xl: 28px;
+        --radius-lg: 20px;
+        --radius-md: 16px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+      }
+
+      body {
+        font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
+        background:
+          radial-gradient(circle at top left, rgba(79, 209, 197, 0.18), transparent 28%),
+          radial-gradient(circle at top right, rgba(255, 184, 107, 0.12), transparent 26%),
+          radial-gradient(circle at bottom, rgba(56, 189, 248, 0.12), transparent 30%),
+          linear-gradient(180deg, #07101c 0%, #091120 45%, #050b14 100%);
+        color: var(--text);
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        background-size: 72px 72px;
+        mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.45), transparent 80%);
+        opacity: 0.35;
+      }
+
+      .page {
+        position: relative;
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 32px;
+      }
+
+      .hero {
+        display: grid;
+        gap: 18px;
+        margin-bottom: 22px;
+        padding: 28px 28px 24px;
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius-xl) + 4px);
+        background: linear-gradient(180deg, rgba(15, 24, 39, 0.92), rgba(9, 15, 27, 0.78));
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(18px);
+        animation: lift-in 420ms ease-out;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        width: fit-content;
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(79, 209, 197, 0.25);
+        background: rgba(79, 209, 197, 0.08);
+        color: #bffaf2;
+        font-size: 12px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .hero h1 {
+        margin: 0;
+        font-size: clamp(2rem, 4vw, 4.3rem);
+        line-height: 0.95;
+        letter-spacing: -0.06em;
+      }
+
+      .hero p {
+        max-width: 760px;
+        margin: 0;
+        color: var(--muted);
+        font-size: 1rem;
+        line-height: 1.7;
+      }
+
+      .status-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--muted);
+        font-size: 0.94rem;
+      }
+
+      .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #44e3a5;
+        box-shadow: 0 0 0 6px rgba(68, 227, 165, 0.12);
+      }
+
+      .shell {
+        display: grid;
+        grid-template-columns: minmax(0, 1.8fr) minmax(280px, 0.9fr);
+        gap: 18px;
+      }
+
+      .chat-panel,
+      .side-panel {
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        background: linear-gradient(180deg, var(--panel), rgba(10, 16, 28, 0.96));
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(18px);
+      }
+
+      .chat-panel {
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        min-height: min(76vh, 860px);
+        overflow: hidden;
+      }
+
+      .chat-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 18px 20px;
+        border-bottom: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .chat-title {
+        display: grid;
+        gap: 4px;
+      }
+
+      .chat-title strong {
+        font-size: 1rem;
+        letter-spacing: 0.02em;
+      }
+
+      .chat-title span {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .chip {
+        padding: 9px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(79, 209, 197, 0.2);
+        background: rgba(79, 209, 197, 0.08);
+        color: #d6fffb;
+        font-size: 0.88rem;
+        white-space: nowrap;
+      }
+
+      .messages {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        padding: 22px;
+        overflow-y: auto;
+        scroll-behavior: smooth;
+      }
+
+      .message {
+        max-width: min(760px, 92%);
+        padding: 15px 16px;
+        border-radius: 18px;
+        line-height: 1.65;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        border: 1px solid transparent;
+      }
+
+      .message.user {
+        align-self: flex-end;
+        background: var(--user);
+        color: #07111b;
+        border-bottom-right-radius: 6px;
+        box-shadow: 0 16px 34px rgba(79, 209, 197, 0.18);
+      }
+
+      .message.assistant {
+        align-self: flex-start;
+        background: var(--assistant);
+        border-color: var(--border);
+        color: var(--text);
+        border-bottom-left-radius: 6px;
+      }
+
+      .message.system {
+        align-self: center;
+        max-width: 100%;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: rgba(255, 184, 107, 0.1);
+        border-color: rgba(255, 184, 107, 0.18);
+        color: #ffd8b1;
+        font-size: 0.92rem;
+      }
+
+      .message-meta {
+        display: block;
+        margin-bottom: 8px;
+        color: rgba(255, 255, 255, 0.62);
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .composer {
+        padding: 18px;
+        border-top: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .suggestions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+
+      .suggestion {
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text);
+        border-radius: 999px;
+        padding: 10px 14px;
+        font: inherit;
+        cursor: pointer;
+        transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+      }
+
+      .suggestion:hover {
+        transform: translateY(-1px);
+        border-color: rgba(79, 209, 197, 0.45);
+        background: rgba(79, 209, 197, 0.08);
+      }
+
+      form {
+        display: flex;
+        gap: 12px;
+        align-items: end;
+      }
+
+      .input-wrap {
+        flex: 1;
+        display: grid;
+        gap: 8px;
+      }
+
+      label {
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 56px;
+        max-height: 180px;
+        resize: vertical;
+        padding: 16px 18px;
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(4, 8, 15, 0.8);
+        color: var(--text);
+        font: inherit;
+        line-height: 1.5;
+        outline: none;
+      }
+
+      textarea:focus {
+        border-color: rgba(79, 209, 197, 0.5);
+        box-shadow: 0 0 0 4px rgba(79, 209, 197, 0.12);
+      }
+
+      .send-btn {
+        min-width: 120px;
+        border: 0;
+        border-radius: 18px;
+        padding: 16px 18px;
+        font: inherit;
+        font-weight: 700;
+        color: #041019;
+        cursor: pointer;
+        background: linear-gradient(135deg, var(--accent) 0%, #9cfbe7 100%);
+        box-shadow: 0 16px 34px rgba(79, 209, 197, 0.18);
+        transition: transform 140ms ease, filter 140ms ease;
+      }
+
+      .send-btn:hover:not(:disabled) {
+        transform: translateY(-1px);
+        filter: brightness(1.02);
+      }
+
+      .send-btn:disabled {
+        cursor: not-allowed;
+        opacity: 0.65;
+      }
+
+      .side-panel {
+        padding: 20px;
+        display: grid;
+        gap: 18px;
+        align-content: start;
+      }
+
+      .panel-block {
+        padding: 18px;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .panel-block h2,
+      .panel-block h3 {
+        margin: 0 0 10px;
+      }
+
+      .panel-block h2 {
+        font-size: 1.05rem;
+      }
+
+      .panel-block h3 {
+        font-size: 0.96rem;
+        color: #d6e6f9;
+      }
+
+      .panel-block p,
+      .panel-block li {
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .panel-block ul {
+        margin: 10px 0 0;
+        padding-left: 18px;
+      }
+
+      .checklist {
+        display: grid;
+        gap: 10px;
+      }
+
+      .check-item {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        color: var(--muted);
+      }
+
+      .check-bullet {
+        width: 10px;
+        height: 10px;
+        margin-top: 7px;
+        border-radius: 50%;
+        background: var(--accent-2);
+        box-shadow: 0 0 0 5px rgba(255, 184, 107, 0.12);
+        flex: none;
+      }
+
+      .typing {
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+      }
+
+      .typing span {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #cfe7ff;
+        animation: pulse 1.1s infinite ease-in-out;
+      }
+
+      .typing span:nth-child(2) {
+        animation-delay: 0.15s;
+      }
+
+      .typing span:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
+      }
+
+      @keyframes lift-in {
+        from {
+          transform: translateY(10px);
+          opacity: 0;
+        }
+
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 0.35;
+          transform: translateY(0);
+        }
+
+        50% {
+          opacity: 1;
+          transform: translateY(-3px);
+        }
+      }
+
+      @media (max-width: 980px) {
+        .shell {
+          grid-template-columns: 1fr;
+        }
+
+        .side-panel {
+          order: -1;
+        }
+
+        .chat-panel {
+          min-height: 70vh;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .page {
+          padding: 16px;
+        }
+
+        .hero,
+        .side-panel,
+        .composer,
+        .chat-header,
+        .messages {
+          padding-left: 16px;
+          padding-right: 16px;
+        }
+
+        .hero {
+          padding-top: 22px;
+        }
+
+        form {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .send-btn {
+          width: 100%;
+        }
+
+        .message {
+          max-width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <section class="hero">
+        <div class="eyebrow">Resume Assistant</div>
+        <h1>Chat with the resume data in a clean, focused UI.</h1>
+        <p>
+          Ask questions about the candidate’s background, skills, projects,
+          certifications, or experience. The assistant answers strictly from the
+          parsed resume behind the FastAPI backend.
+        </p>
+        <div class="status-row">
+          <div class="status-pill"><span class="status-dot"></span><span>Backend ready at <strong>/chat</strong></span></div>
+          <div class="status-pill">Press <strong>Enter</strong> to send, <strong>Shift+Enter</strong> for a new line</div>
+        </div>
+      </section>
+
+      <section class="shell">
+        <article class="chat-panel" aria-label="Resume chat window">
+          <header class="chat-header">
+            <div class="chat-title">
+              <strong>Candidate interview chat</strong>
+              <span>Grounded in the uploaded resume only</span>
+            </div>
+            <div class="chip">Ask anything about the resume</div>
+          </header>
+
+          <div id="messages" class="messages" aria-live="polite" aria-relevant="additions text"></div>
+
+          <div class="composer">
+            <div class="suggestions" aria-label="Suggested prompts">
+              <button class="suggestion" type="button" data-prompt="Summarize the candidate's experience.">Summarize experience</button>
+              <button class="suggestion" type="button" data-prompt="What skills are listed on the resume?">List skills</button>
+              <button class="suggestion" type="button" data-prompt="What projects are mentioned on the resume?">Show projects</button>
+              <button class="suggestion" type="button" data-prompt="What education and certifications are included?">Education and certifications</button>
+            </div>
+
+            <form id="chat-form">
+              <div class="input-wrap">
+                <label for="question" class="visually-hidden">Your question</label>
+                <textarea id="question" name="question" placeholder="Ask a question about the resume..." rows="2"></textarea>
+              </div>
+              <button id="send-btn" class="send-btn" type="submit">Send</button>
+            </form>
+          </div>
+        </article>
+
+        <aside class="side-panel">
+          <div class="panel-block">
+            <h2>What this page does</h2>
+            <p>
+              This is a direct chat interface for the backend endpoint. It sends your
+              question to <strong>/chat</strong> and renders the assistant response in the
+              same window.
+            </p>
+          </div>
+
+          <div class="panel-block">
+            <h3>Best questions to try</h3>
+            <div class="checklist">
+              <div class="check-item"><span class="check-bullet"></span><span>“Tell me about the candidate’s experience in one paragraph.”</span></div>
+              <div class="check-item"><span class="check-bullet"></span><span>“Which tools or technologies are mentioned?”</span></div>
+              <div class="check-item"><span class="check-bullet"></span><span>“What job titles or roles appear in the resume?”</span></div>
+              <div class="check-item"><span class="check-bullet"></span><span>“Which certifications are listed?”</span></div>
+            </div>
+          </div>
+
+          <div class="panel-block">
+            <h3>Behavior</h3>
+            <ul>
+              <li>No hallucinations: the model should only answer from the parsed resume.</li>
+              <li>If a detail is missing, it should say the information is unavailable.</li>
+              <li>Responses appear as chat bubbles with loading feedback.</li>
+            </ul>
+          </div>
+        </aside>
+      </section>
+    </div>
+
+    <script>
+      const messagesEl = document.getElementById("messages");
+      const form = document.getElementById("chat-form");
+      const questionEl = document.getElementById("question");
+      const sendBtn = document.getElementById("send-btn");
+      const suggestions = document.querySelectorAll(".suggestion");
+      const STORAGE_KEY = "resume-chat-history";
+
+      const defaultMessages = [
+        {
+          role: "assistant",
+          text: "Ask me anything about the resume. I can summarize experience, list skills, or pull out projects and certifications.",
+        },
+      ];
+
+      function loadMessages() {
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          if (!saved) {
+            return defaultMessages;
+          }
+
+          const parsed = JSON.parse(saved);
+          return Array.isArray(parsed) && parsed.length ? parsed : defaultMessages;
+        } catch (error) {
+          return defaultMessages;
+        }
+      }
+
+      function saveMessages(items) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      }
+
+      let messages = loadMessages();
+
+      function escapeHtml(text) {
+        return text
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+      }
+
+      function scrollToBottom() {
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+      }
+
+      function renderMessages() {
+        messagesEl.innerHTML = messages
+          .map((message) => {
+            const meta = message.role === "assistant" ? "Assistant" : message.role === "user" ? "You" : "System";
+            return `
+              <div class="message ${message.role}">
+                <span class="message-meta">${meta}</span>
+                ${escapeHtml(message.text)}
+              </div>
+            `;
+          })
+          .join("");
+
+        scrollToBottom();
+      }
+
+      function setLoading(isLoading) {
+        sendBtn.disabled = isLoading;
+        questionEl.disabled = isLoading;
+        suggestions.forEach((button) => {
+          button.disabled = isLoading;
+        });
+
+        sendBtn.textContent = isLoading ? "Sending..." : "Send";
+      }
+
+      function addMessage(role, text, options = {}) {
+        const message = { role, text };
+        messages = [...messages, message];
+
+        if (!options.skipSave) {
+          saveMessages(messages);
+        }
+
+        renderMessages();
+        return messages.length - 1;
+      }
+
+      function updateMessage(index, text) {
+        if (!messages[index]) {
+          return;
+        }
+
+        messages[index] = { ...messages[index], text };
+        renderMessages();
+      }
+
+      async function submitQuestion(questionText) {
+        const question = questionText.trim();
+
+        if (!question) {
+          return;
+        }
+
+        addMessage("user", question);
+        questionEl.value = "";
+        setLoading(true);
+        const assistantIndex = addMessage("assistant", "", { skipSave: true });
+
+        try {
+          const response = await fetch("/chat", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ question }),
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText || `Request failed with status ${response.status}`);
+          }
+
+          if (!response.body) {
+            const fallbackText = await response.text();
+            updateMessage(assistantIndex, fallbackText || "No answer was returned.");
+            saveMessages(messages);
+            return;
+          }
+
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          let streamedText = "";
+
+          while (true) {
+            const { done, value } = await reader.read();
+
+            if (done) {
+              break;
+            }
+
+            streamedText += decoder.decode(value, { stream: true });
+            updateMessage(assistantIndex, streamedText);
+          }
+
+          streamedText += decoder.decode();
+          updateMessage(assistantIndex, streamedText || "No answer was returned.");
+          saveMessages(messages);
+        } catch (error) {
+          messages = messages.slice(0, assistantIndex);
+          addMessage(
+            "system",
+            error instanceof Error && error.message
+              ? error.message
+              : "I could not reach the backend. Check that the FastAPI server is running and that GROQ_API_KEY is set."
+          );
+        } finally {
+          setLoading(false);
+          questionEl.focus();
+        }
+      }
+
+      suggestions.forEach((button) => {
+        button.addEventListener("click", () => {
+          questionEl.value = button.dataset.prompt || "";
+          questionEl.focus();
+        });
+      });
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        submitQuestion(questionEl.value);
+      });
+
+      questionEl.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          submitQuestion(questionEl.value);
+        }
+      });
+
+      renderMessages();
+      questionEl.focus();
+    </script>
+  </body>
+</html>
