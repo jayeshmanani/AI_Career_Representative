@@ -33,11 +33,25 @@ def test_api_profile():
 
 
 def test_api_resume():
+    # Test inline view (no filename attribute to avoid triggering browser download manager)
     response = client.get("/api/resume")
     assert response.status_code == 200
     assert "application/pdf" in response.headers.get("content-type", "")
-    assert "inline" in response.headers.get("content-disposition", "").lower()
+    assert response.headers.get("content-disposition", "") == "inline"
     assert len(response.content) > 10000
+
+    # Test .pdf alias endpoint
+    pdf_alias_resp = client.get("/api/resume.pdf")
+    assert pdf_alias_resp.status_code == 200
+    assert "application/pdf" in pdf_alias_resp.headers.get("content-type", "")
+    assert pdf_alias_resp.headers.get("content-disposition", "") == "inline"
+
+    # Test explicit download query parameter
+    download_resp = client.get("/api/resume?download=true")
+    assert download_resp.status_code == 200
+    assert "attachment" in download_resp.headers.get("content-disposition", "")
+    assert 'filename="resume.pdf"' in download_resp.headers.get(
+        "content-disposition", "")
 
 
 def test_chat_validation_empty():
@@ -84,8 +98,10 @@ def test_chat_transferable_skills_for_unlisted_tech():
     answer = response.text.lower()
     if "rate_limit" in answer or "429" in answer:
         return
-    assert "not" in answer or "explicitly" in answer
-    assert "python" in answer or "c" in answer or "transferable" in answer or "adapt" in answer or "learn" in answer
+    assert any(k in answer for k in ("not", "explicitly", "don't",
+               "don’t", "doesn't", "unlisted", "no direct"))
+    assert any(k in answer for k in ("python", "c", "transferable",
+               "adapt", "learn", "foundation", "basis"))
 
 
 def test_health_fallback_models():

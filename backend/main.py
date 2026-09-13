@@ -338,17 +338,24 @@ def profile():
 
 
 @app.api_route("/api/resume", methods=["GET", "HEAD"])
-def download_resume():
+@app.api_route("/api/resume.pdf", methods=["GET", "HEAD"])
+def download_resume(download: bool = False):
     if not RESUME_PATH.exists():
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
             content={"detail": "Resume PDF not found"},
         )
+    headers = {
+        "Content-Type": "application/pdf",
+        "Accept-Ranges": "bytes",
+        "Content-Disposition": f'attachment; filename="{RESUME_PATH.name}"'
+        if download
+        else "inline",
+    }
     return FileResponse(
         RESUME_PATH,
         media_type="application/pdf",
-        filename=RESUME_PATH.name,
-        content_disposition_type="inline",
+        headers=headers,
     )
 
 
