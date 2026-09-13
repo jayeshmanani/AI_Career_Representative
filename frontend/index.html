@@ -3,25 +3,34 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Resume Chat</title>
+    <meta name="description" content="AI-powered interactive resume assistant for candidate technical screening and interview inquiries." />
+    <title>Candidate AI Resume Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <style>
       :root {
         color-scheme: dark;
-        --bg: #08111f;
-        --bg-soft: rgba(14, 24, 41, 0.8);
-        --panel: rgba(12, 20, 35, 0.92);
-        --panel-strong: rgba(17, 29, 48, 0.96);
-        --text: #f4f7fb;
-        --muted: #9fb0c5;
-        --border: rgba(169, 193, 224, 0.16);
-        --shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
-        --accent: #4fd1c5;
-        --accent-2: #ffb86b;
-        --user: linear-gradient(135deg, #4fd1c5 0%, #38bdf8 100%);
-        --assistant: rgba(255, 255, 255, 0.06);
-        --radius-xl: 28px;
-        --radius-lg: 20px;
-        --radius-md: 16px;
+        --bg: #060b14;
+        --bg-panel: rgba(12, 20, 36, 0.82);
+        --bg-panel-elevated: rgba(18, 30, 52, 0.92);
+        --text: #f0f4fc;
+        --text-muted: #94a3b8;
+        --text-dim: #64748b;
+        --border: rgba(148, 163, 184, 0.14);
+        --border-focus: rgba(79, 209, 197, 0.5);
+        --accent: #38bdf8;
+        --accent-glow: rgba(56, 189, 248, 0.25);
+        --teal: #14b8a6;
+        --teal-glow: rgba(20, 184, 166, 0.2);
+        --user-bubble: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
+        --assistant-bubble: rgba(18, 28, 48, 0.88);
+        --radius-xl: 20px;
+        --radius-lg: 14px;
+        --radius-md: 10px;
+        --shadow-lg: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+        --font-main: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
       }
 
       * {
@@ -31,681 +40,854 @@
       html,
       body {
         margin: 0;
+        padding: 0;
         width: 100%;
         height: 100%;
+        font-family: var(--font-main);
+        background: var(--bg);
+        color: var(--text);
+        overflow: hidden;
       }
 
       body {
-        overflow: hidden;
-        font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
         background:
-          radial-gradient(circle at top left, rgba(79, 209, 197, 0.18), transparent 28%),
-          radial-gradient(circle at top right, rgba(255, 184, 107, 0.12), transparent 26%),
-          radial-gradient(circle at bottom, rgba(56, 189, 248, 0.12), transparent 30%),
-          linear-gradient(180deg, #07101c 0%, #091120 45%, #050b14 100%);
-        color: var(--text);
+          radial-gradient(ellipse 80% 50% at 50% -20%, rgba(56, 189, 248, 0.15), transparent),
+          radial-gradient(ellipse 60% 40% at 100% 100%, rgba(20, 184, 166, 0.1), transparent),
+          radial-gradient(ellipse 50% 50% at 0% 100%, rgba(30, 41, 59, 0.5), transparent),
+          #060b14;
       }
 
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        background-image:
-          linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-        background-size: 72px 72px;
-        mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.45), transparent 80%);
-        opacity: 0.35;
-      }
-
-      .page {
-        position: relative;
+      .app-layout {
         display: grid;
-        grid-template-rows: auto minmax(0, 1fr);
+        grid-template-rows: auto 1fr;
         height: 100dvh;
-        min-height: 100vh;
         width: 100vw;
-        max-width: none;
+        max-width: 1540px;
         margin: 0 auto;
-        padding: 12px 14px 14px;
-        overflow: hidden;
+        padding: 12px 16px 14px;
+        gap: 12px;
       }
 
-      .hero {
+      /* Header / Hero */
+      .top-nav {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 16px;
-        margin-bottom: 10px;
-        padding: 9px 14px;
+        padding: 10px 18px;
+        background: var(--bg-panel);
         border: 1px solid var(--border);
-        border-radius: 16px;
-        background: rgba(9, 15, 27, 0.82);
-        box-shadow: var(--shadow);
-        backdrop-filter: blur(18px);
-        animation: lift-in 420ms ease-out;
+        border-radius: var(--radius-lg);
+        backdrop-filter: blur(16px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
       }
 
-      .hero-copy {
+      .candidate-brand {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 14px;
         min-width: 0;
       }
 
-      .hero-meta {
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #0ea5e9, #14b8a6);
         display: flex;
-        flex-wrap: wrap;
-        justify-content: flex-end;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 1.05rem;
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(14, 165, 233, 0.35);
+        flex-shrink: 0;
+      }
+
+      .candidate-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+      }
+
+      .candidate-title-row {
+        display: flex;
+        align-items: center;
         gap: 10px;
-      }
-
-      .eyebrow {
-        display: inline-flex;
-        align-items: center;
-        width: fit-content;
-        padding: 6px 10px;
-        border-radius: 999px;
-        border: 1px solid rgba(79, 209, 197, 0.25);
-        background: rgba(79, 209, 197, 0.08);
-        color: #bffaf2;
-        font-size: 12px;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-      }
-
-      .hero h1 {
-        margin: 0;
-        font-size: 0.98rem;
-        line-height: 1.35;
-        letter-spacing: -0.05em;
-        font-weight: 650;
-      }
-
-      .status-row {
-        display: none;
-      }
-
-      .shell {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) 288px;
-        gap: 12px;
-        min-height: 0;
-      }
-
-      .chat-panel,
-      .side-panel {
-        border: 1px solid var(--border);
-        border-radius: 22px;
-        background: linear-gradient(180deg, var(--panel), rgba(10, 16, 28, 0.96));
-        box-shadow: var(--shadow);
-        backdrop-filter: blur(18px);
-      }
-
-      .chat-panel {
-        display: grid;
-        grid-template-rows: auto minmax(0, 1fr) auto;
-        min-height: 0;
-        height: 100%;
-        overflow: hidden;
-      }
-
-      .side-panel {
-        display: grid;
-        grid-template-rows: auto auto 1fr;
-        gap: 12px;
-        min-height: 0;
-        padding: 14px;
-        overflow: hidden;
-      }
-
-      .side-panel h2,
-      .side-panel h3 {
-        margin: 0;
-      }
-
-      .side-panel h2 {
-        font-size: 0.98rem;
-      }
-
-      .side-panel h3 {
-        font-size: 0.9rem;
-        color: #d6e6f9;
-      }
-
-      .side-panel p,
-      .side-panel li {
-        margin: 0;
-        color: var(--muted);
-        line-height: 1.55;
-        font-size: 0.88rem;
-      }
-
-      .side-panel ul {
-        margin: 0;
-        padding-left: 18px;
-        display: grid;
-        gap: 8px;
-      }
-
-      .side-card {
-        padding: 12px;
-        border-radius: 16px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        background: rgba(255, 255, 255, 0.03);
-      }
-
-      .side-tags {
-        display: flex;
         flex-wrap: wrap;
-        gap: 8px;
       }
 
-      .side-tag {
-        padding: 6px 10px;
-        border-radius: 999px;
-        border: 1px solid rgba(79, 209, 197, 0.18);
-        background: rgba(79, 209, 197, 0.07);
-        color: #d9fffb;
-        font-size: 0.8rem;
-      }
-
-      .chat-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        padding: 14px 18px;
-        border-bottom: 1px solid var(--border);
-        background: rgba(255, 255, 255, 0.02);
-      }
-
-      .chat-title {
-        display: grid;
-        gap: 4px;
-      }
-
-      .chat-title strong {
-        font-size: 0.98rem;
-        letter-spacing: 0.02em;
-      }
-
-      .chat-title span {
-        color: var(--muted);
-        font-size: 0.84rem;
-      }
-
-      .chip {
-        padding: 7px 11px;
-        border-radius: 999px;
-        border: 1px solid rgba(79, 209, 197, 0.2);
-        background: rgba(79, 209, 197, 0.08);
-        color: #d6fffb;
-        font-size: 0.82rem;
+      .candidate-name {
+        margin: 0;
+        font-size: 1.05rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
         white-space: nowrap;
       }
 
-      .messages {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        padding: 20px 22px 16px;
-        min-height: 0;
-        overflow-y: auto;
-        scroll-behavior: smooth;
-        background:
-          radial-gradient(circle at top, rgba(79, 209, 197, 0.04), transparent 24%),
-          radial-gradient(circle at bottom right, rgba(255, 184, 107, 0.03), transparent 18%);
+      .role-badge {
+        font-size: 0.76rem;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: rgba(56, 189, 248, 0.12);
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        color: #7dd3fc;
       }
 
-      .message {
-        max-width: min(980px, 92%);
-        padding: 16px 18px;
-        border-radius: 20px;
-        line-height: 1.7;
-        font-size: 0.98rem;
-        word-wrap: break-word;
-        border: 1px solid transparent;
-      }
-
-      .message-content {
-        display: grid;
-        gap: 12px;
-      }
-
-      .message-content > :first-child {
-        margin-top: 0;
-      }
-
-      .message-content > :last-child {
-        margin-bottom: 0;
-      }
-
-      .message-content p {
-        margin: 0;
-        line-height: 1.72;
-      }
-
-      .message-content h3,
-      .message-content h4 {
-        margin: 0;
-        font-size: 1rem;
-        line-height: 1.4;
-      }
-
-      .message-content ul,
-      .message-content ol {
-        margin: 0;
-        padding-left: 1.15rem;
-        display: grid;
-        gap: 0.45rem;
-      }
-
-      .message-content table {
-        width: 100%;
-        border-collapse: collapse;
-        border-radius: 14px;
+      .candidate-sub {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        white-space: nowrap;
         overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        background: rgba(255, 255, 255, 0.03);
-        font-size: 0.95rem;
+        text-overflow: ellipsis;
       }
 
-      .message-content th,
-      .message-content td {
-        padding: 10px 12px;
-        vertical-align: top;
-        text-align: left;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      }
-
-      .message-content th {
-        color: #f8fbff;
-        font-weight: 700;
-        background: rgba(255, 255, 255, 0.05);
-      }
-
-      .message-content tr:last-child td {
-        border-bottom: 0;
-      }
-
-      .message-content li {
-        padding-left: 0.15rem;
-      }
-
-      .message-content strong {
-        color: inherit;
-      }
-
-      .message-content hr {
-        width: 100%;
-        margin: 0;
-        border: 0;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-      }
-
-      .message.user {
-        align-self: flex-end;
-        background: var(--user);
-        color: #07111b;
-        border-bottom-right-radius: 6px;
-        box-shadow: 0 16px 34px rgba(79, 209, 197, 0.18);
-      }
-
-      .message.assistant {
-        align-self: flex-start;
-        background: var(--assistant);
-        border-color: var(--border);
-        color: var(--text);
-        border-bottom-left-radius: 6px;
-      }
-
-      .message.system {
-        align-self: center;
-        max-width: 100%;
-        padding: 10px 14px;
-        border-radius: 999px;
-        background: rgba(255, 184, 107, 0.1);
-        border-color: rgba(255, 184, 107, 0.18);
-        color: #ffd8b1;
-        font-size: 0.92rem;
-      }
-
-      .message-meta {
-        display: block;
-        margin-bottom: 8px;
-        color: rgba(255, 255, 255, 0.62);
-        font-size: 0.78rem;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-
-      .composer {
-        padding: 12px 16px 16px;
-        border-top: 1px solid var(--border);
-        background: rgba(255, 255, 255, 0.03);
-      }
-
-      .suggestions {
+      .top-actions {
         display: flex;
-        flex-wrap: wrap;
+        align-items: center;
         gap: 10px;
-        margin-bottom: 12px;
       }
 
-      .suggestion {
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        background: rgba(255, 255, 255, 0.04);
-        color: var(--text);
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
         border-radius: 999px;
-        padding: 9px 14px;
-        font: inherit;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border);
+        font-size: 0.78rem;
+        color: var(--text-muted);
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #10b981;
+        box-shadow: 0 0 10px #10b981;
+        animation: status-pulse 2s infinite ease-in-out;
+      }
+
+      @keyframes status-pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.45; transform: scale(0.85); }
+      }
+
+      .btn-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 13px;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--border);
         cursor: pointer;
-        transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+        text-decoration: none;
+        transition: all 150ms ease;
       }
 
-      .suggestion:hover {
+      .btn-action:hover {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.25);
         transform: translateY(-1px);
-        border-color: rgba(79, 209, 197, 0.45);
-        background: rgba(79, 209, 197, 0.08);
       }
 
-      form {
-        display: flex;
-        gap: 14px;
-        align-items: end;
+      .btn-action.btn-pdf {
+        background: rgba(56, 189, 248, 0.12);
+        border-color: rgba(56, 189, 248, 0.35);
+        color: #bae6fd;
       }
 
-      .input-wrap {
-        flex: 1;
+      .btn-action.btn-pdf:hover {
+        background: rgba(56, 189, 248, 0.22);
+        border-color: #38bdf8;
+      }
+
+      /* Main Shell */
+      .main-shell {
         display: grid;
+        grid-template-columns: minmax(0, 1fr) 320px;
+        gap: 14px;
+        min-height: 0;
+        height: 100%;
+      }
+
+      /* Chat Panel */
+      .chat-panel {
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        min-height: 0;
+        background: var(--bg-panel);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-lg);
+        backdrop-filter: blur(16px);
+        overflow: hidden;
+      }
+
+      .chat-subheader {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 18px;
+        border-bottom: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.015);
+      }
+
+      .chat-subheader-title {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--text);
+        display: flex;
+        align-items: center;
         gap: 8px;
       }
 
-      label {
-        color: var(--muted);
-        font-size: 0.88rem;
+      .chat-subheader-title span {
+        color: var(--text-dim);
+        font-size: 0.78rem;
+        font-weight: 400;
+      }
+
+      .btn-clear {
+        padding: 4px 10px;
+        border-radius: 6px;
+        background: transparent;
+        border: 1px solid transparent;
+        color: var(--text-dim);
+        font-size: 0.75rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 120ms ease;
+      }
+
+      .btn-clear:hover {
+        background: rgba(239, 68, 68, 0.12);
+        border-color: rgba(239, 68, 68, 0.25);
+        color: #fca5a5;
+      }
+
+      /* Messages area */
+      .messages-container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding: 20px;
+        overflow-y: auto;
+        scroll-behavior: smooth;
+        min-height: 0;
+      }
+
+      .message-wrapper {
+        display: flex;
+        flex-direction: column;
+        max-width: 88%;
+        gap: 4px;
+        animation: fade-slide-up 220ms ease-out;
+      }
+
+      @keyframes fade-slide-up {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .message-wrapper.user {
+        align-self: flex-end;
+      }
+
+      .message-wrapper.assistant {
+        align-self: flex-start;
+      }
+
+      .message-wrapper.system {
+        align-self: center;
+        max-width: 90%;
+      }
+
+      .message-sender {
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--text-dim);
+        padding: 0 4px;
+      }
+
+      .message-bubble {
+        position: relative;
+        padding: 14px 18px;
+        border-radius: var(--radius-lg);
+        font-size: 0.94rem;
+        line-height: 1.65;
+        border: 1px solid transparent;
+      }
+
+      .message-wrapper.user .message-bubble {
+        background: var(--user-bubble);
+        color: #ffffff;
+        border-bottom-right-radius: 4px;
+        box-shadow: 0 8px 24px rgba(2, 132, 199, 0.25);
+      }
+
+      .message-wrapper.assistant .message-bubble {
+        background: var(--assistant-bubble);
+        color: var(--text);
+        border-color: var(--border);
+        border-bottom-left-radius: 4px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      }
+
+      .message-wrapper.system .message-bubble {
+        background: rgba(245, 158, 11, 0.1);
+        border-color: rgba(245, 158, 11, 0.25);
+        color: #fde68a;
+        font-size: 0.85rem;
+        text-align: center;
+        border-radius: 999px;
+        padding: 8px 16px;
+      }
+
+      /* Formatted Content inside Assistant */
+      .bubble-content {
+        display: grid;
+        gap: 10px;
+        word-break: break-word;
+      }
+
+      .bubble-content p {
+        margin: 0;
+      }
+
+      .bubble-content h3,
+      .bubble-content h4 {
+        margin: 4px 0 0;
+        font-size: 0.98rem;
+        font-weight: 700;
+        color: #e2e8f0;
+      }
+
+      .bubble-content ul,
+      .bubble-content ol {
+        margin: 0;
+        padding-left: 1.2rem;
+        display: grid;
+        gap: 6px;
+      }
+
+      .bubble-content li {
+        line-height: 1.55;
+      }
+
+      .bubble-content code {
+        font-family: var(--font-mono);
+        font-size: 0.85em;
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: #7dd3fc;
+      }
+
+      .bubble-content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 4px 0;
+        font-size: 0.86rem;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+      }
+
+      .bubble-content th,
+      .bubble-content td {
+        padding: 8px 12px;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .bubble-content th {
+        background: rgba(255, 255, 255, 0.06);
+        font-weight: 600;
+      }
+
+      .message-footer {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 4px;
+      }
+
+      .btn-copy {
+        background: transparent;
+        border: 0;
+        color: var(--text-dim);
+        font-size: 0.72rem;
+        cursor: pointer;
+        padding: 2px 6px;
+        border-radius: 4px;
+        transition: color 120ms ease;
+      }
+
+      .btn-copy:hover {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      /* Composer */
+      .composer-section {
+        border-top: 1px solid var(--border);
+        padding: 12px 18px 16px;
+        background: rgba(10, 16, 30, 0.9);
+      }
+
+      .suggestions-row {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 10px;
+        scrollbar-width: none;
+      }
+
+      .suggestions-row::-webkit-scrollbar {
+        display: none;
+      }
+
+      .btn-suggestion {
+        white-space: nowrap;
+        font-family: inherit;
+        font-size: 0.78rem;
+        font-weight: 500;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 140ms ease;
+      }
+
+      .btn-suggestion:hover {
+        background: rgba(56, 189, 248, 0.1);
+        border-color: rgba(56, 189, 248, 0.35);
+        color: #e0f2fe;
+        transform: translateY(-1px);
+      }
+
+      .composer-form {
+        display: flex;
+        gap: 10px;
+        align-items: flex-end;
+      }
+
+      .textarea-container {
+        flex: 1;
+        position: relative;
+        background: rgba(6, 11, 20, 0.85);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        transition: border-color 140ms ease, box-shadow 140ms ease;
+      }
+
+      .textarea-container:focus-within {
+        border-color: var(--border-focus);
+        box-shadow: 0 0 0 3px var(--accent-glow);
       }
 
       textarea {
         width: 100%;
-        min-height: 62px;
-        max-height: 180px;
-        resize: vertical;
-        padding: 16px 18px;
-        border-radius: 18px;
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        background: rgba(4, 8, 15, 0.8);
+        min-height: 48px;
+        max-height: 160px;
+        resize: none;
+        padding: 12px 16px;
+        font-family: inherit;
+        font-size: 0.92rem;
+        line-height: 1.5;
         color: var(--text);
-        font: inherit;
-        line-height: 1.6;
-        font-size: 0.98rem;
+        background: transparent;
+        border: 0;
         outline: none;
       }
 
-      textarea:focus {
-        border-color: rgba(79, 209, 197, 0.5);
-        box-shadow: 0 0 0 4px rgba(79, 209, 197, 0.12);
+      .composer-actions {
+        display: flex;
+        gap: 8px;
       }
 
-      .send-btn {
-        min-width: 116px;
-        border: 0;
-        border-radius: 18px;
-        padding: 16px 18px;
-        font: inherit;
+      .btn-send,
+      .btn-stop {
+        height: 48px;
+        padding: 0 20px;
+        border-radius: var(--radius-lg);
+        font-family: inherit;
         font-weight: 700;
-        color: #041019;
+        font-size: 0.9rem;
         cursor: pointer;
-        background: linear-gradient(135deg, var(--accent) 0%, #9cfbe7 100%);
-        box-shadow: 0 16px 34px rgba(79, 209, 197, 0.18);
-        transition: transform 140ms ease, filter 140ms ease;
-      }
-
-      .send-btn:hover:not(:disabled) {
-        transform: translateY(-1px);
-        filter: brightness(1.02);
-      }
-
-      .send-btn:disabled {
-        cursor: not-allowed;
-        opacity: 0.65;
-      }
-
-      .typing {
         display: inline-flex;
-        gap: 6px;
         align-items: center;
-      }
-
-      .typing span {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #cfe7ff;
-        animation: pulse 1.1s infinite ease-in-out;
-      }
-
-      .typing span:nth-child(2) {
-        animation-delay: 0.15s;
-      }
-
-      .typing span:nth-child(3) {
-        animation-delay: 0.3s;
-      }
-
-      .visually-hidden {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        margin: -1px;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
+        justify-content: center;
+        gap: 6px;
         border: 0;
+        transition: all 140ms ease;
       }
 
-      @keyframes lift-in {
-        from {
-          transform: translateY(10px);
-          opacity: 0;
-        }
-
-        to {
-          transform: translateY(0);
-          opacity: 1;
-        }
+      .btn-send {
+        background: linear-gradient(135deg, #0ea5e9 0%, #14b8a6 100%);
+        color: #031525;
+        box-shadow: 0 4px 16px rgba(14, 165, 233, 0.3);
       }
 
-      @keyframes pulse {
-        0%,
-        100% {
-          opacity: 0.35;
-          transform: translateY(0);
-        }
-
-        50% {
-          opacity: 1;
-          transform: translateY(-3px);
-        }
+      .btn-send:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
       }
 
-      @media (max-width: 980px) {
-        .page {
-          height: 100dvh;
-          padding: 10px;
-        }
+      .btn-send:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
 
-        .hero {
-          flex-direction: column;
-          align-items: flex-start;
-        }
+      .btn-stop {
+        background: rgba(239, 68, 68, 0.18);
+        border: 1px solid rgba(239, 68, 68, 0.4);
+        color: #fca5a5;
+      }
 
-        .chat-panel {
-          min-height: 0;
-        }
+      .btn-stop:hover {
+        background: rgba(239, 68, 68, 0.28);
+      }
 
-        .shell {
-          grid-template-columns: minmax(0, 1fr);
+      /* Side Panel */
+      .side-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-height: 0;
+        overflow-y: auto;
+      }
+
+      .side-card {
+        background: var(--bg-panel);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 16px;
+        backdrop-filter: blur(16px);
+      }
+
+      .side-card h3 {
+        margin: 0 0 10px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: var(--text);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .badge-count {
+        font-size: 0.72rem;
+        padding: 2px 7px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--text-muted);
+      }
+
+      /* Profile Card */
+      .profile-details {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        font-size: 0.82rem;
+      }
+
+      .profile-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-muted);
+      }
+
+      .profile-item a {
+        color: #7dd3fc;
+        text-decoration: none;
+      }
+
+      .profile-item a:hover {
+        text-decoration: underline;
+      }
+
+      /* Skills Cloud */
+      .skills-cloud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        max-height: 240px;
+        overflow-y: auto;
+        padding-right: 4px;
+      }
+
+      .skill-pill {
+        font-size: 0.76rem;
+        padding: 4px 9px;
+        border-radius: 999px;
+        background: rgba(56, 189, 248, 0.08);
+        border: 1px solid rgba(56, 189, 248, 0.2);
+        color: #bae6fd;
+        cursor: pointer;
+        transition: all 120ms ease;
+      }
+
+      .skill-pill:hover {
+        background: rgba(56, 189, 248, 0.2);
+        border-color: #38bdf8;
+        transform: translateY(-1px);
+      }
+
+      /* Experience highlights */
+      .exp-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .exp-item {
+        border-left: 2px solid rgba(56, 189, 248, 0.4);
+        padding-left: 10px;
+      }
+
+      .exp-role {
+        font-size: 0.84rem;
+        font-weight: 600;
+        color: #e2e8f0;
+      }
+
+      .exp-company {
+        font-size: 0.78rem;
+        color: var(--text-dim);
+      }
+
+      /* Responsive */
+      @media (max-width: 1024px) {
+        .main-shell {
+          grid-template-columns: 1fr;
         }
 
         .side-panel {
           display: none;
         }
-
-        .messages {
-          padding: 18px 16px 14px;
-        }
-
-        .composer {
-          padding: 10px 12px 12px;
-        }
-
-        form {
-          flex-direction: column;
-          align-items: stretch;
-        }
-
-        .send-btn {
-          width: 100%;
-        }
-
-        .message {
-          max-width: 100%;
-        }
       }
 
       @media (max-width: 640px) {
-        .page {
+        .app-layout {
           padding: 8px;
         }
 
-        .hero {
-          padding: 8px 10px;
+        .top-nav {
+          padding: 8px 12px;
         }
 
-        .chat-header {
-          padding: 11px 12px;
-        }
-
-        .messages {
-          gap: 10px;
+        .status-pill {
+          display: none;
         }
       }
     </style>
   </head>
   <body>
-    <div class="page">
-      <section class="hero">
-        <div class="hero-copy">
-          <div class="eyebrow">Resume Assistant</div>
-          <h1>Ask about experience, skills, projects, certifications, or education.</h1>
-        </div>
-        <div class="hero-meta">
-          <div class="status-pill"><span class="status-dot"></span><span>Streaming via <strong>/chat</strong></span></div>
-          <div class="status-pill">Enter to send · Shift+Enter for a new line</div>
-        </div>
-      </section>
-
-      <section class="shell">
-        <article class="chat-panel" aria-label="Resume chat window">
-          <header class="chat-header">
-            <div class="chat-title">
-              <strong>Candidate interview chat</strong>
-              <span>Grounded in the uploaded resume only</span>
+    <div class="app-layout">
+      <!-- Top Navigation / Candidate Identity -->
+      <header class="top-nav">
+        <div class="candidate-brand">
+          <div id="candidate-avatar" class="avatar">JM</div>
+          <div class="candidate-info">
+            <div class="candidate-title-row">
+              <h1 id="candidate-name" class="candidate-name">Jayesh Manani</h1>
+              <span id="candidate-badge" class="role-badge">AI & Cloud Engineer</span>
             </div>
-            <div class="chip">Ask anything about the resume</div>
-          </header>
+            <div id="candidate-sub" class="candidate-sub">5+ Years Exp • Stuttgart, Germany</div>
+          </div>
+        </div>
 
-          <div id="messages" class="messages" aria-live="polite" aria-relevant="additions text"></div>
+        <div class="top-actions">
+          <div class="status-pill">
+            <span class="status-dot"></span>
+            <span>LLM Live Grounded</span>
+          </div>
 
-          <div class="composer">
-            <div class="suggestions" aria-label="Suggested prompts">
-              <button class="suggestion" type="button" data-prompt="Summarize the candidate's experience.">Summarize experience</button>
-              <button class="suggestion" type="button" data-prompt="What skills are listed on the resume?">List skills</button>
-              <button class="suggestion" type="button" data-prompt="What projects are mentioned on the resume?">Show projects</button>
-              <button class="suggestion" type="button" data-prompt="What education and certifications are included?">Education and certifications</button>
+          <a id="btn-view-pdf" class="btn-action btn-pdf" href="/api/resume" target="_blank" rel="noopener noreferrer" title="View original PDF resume">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <span>Resume PDF</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- Main Shell -->
+      <main class="main-shell">
+        <!-- Interactive Chat -->
+        <section class="chat-panel" aria-label="Interactive Interview Chat">
+          <div class="chat-subheader">
+            <div class="chat-subheader-title">
+              Interactive Interview Chat
+              <span>• Ask questions grounded in verified candidate data</span>
+            </div>
+            <button id="btn-clear-chat" class="btn-clear" type="button" title="Clear conversation history">
+              Clear Chat
+            </button>
+          </div>
+
+          <div id="messages-container" class="messages-container" aria-live="polite"></div>
+
+          <div class="composer-section">
+            <div id="suggestions-row" class="suggestions-row" aria-label="Suggested questions">
+              <button class="btn-suggestion" type="button" data-prompt="Summarize Jayesh's professional experience and key technical achievements.">
+                Summarize Experience
+              </button>
+              <button class="btn-suggestion" type="button" data-prompt="What is Jayesh's experience with FastAPI, Python, and microservices?">
+                Backend & Python Stack
+              </button>
+              <button class="btn-suggestion" type="button" data-prompt="Describe his work with Cloud platforms (AWS, Azure) and Kubernetes.">
+                Cloud & DevOps
+              </button>
+              <button class="btn-suggestion" type="button" data-prompt="What enterprise AI and LLM projects has he built?">
+                AI & LLM Projects
+              </button>
             </div>
 
-            <form id="chat-form">
-              <div class="input-wrap">
-                <label for="question" class="visually-hidden">Your question</label>
-                <textarea id="question" name="question" placeholder="Ask a question about the resume..." rows="2"></textarea>
+            <form id="chat-form" class="composer-form">
+              <div class="textarea-container">
+                <textarea
+                  id="question-input"
+                  name="question"
+                  placeholder="Ask a technical or background question about Jayesh..."
+                  rows="1"
+                  required
+                ></textarea>
               </div>
-              <button id="send-btn" class="send-btn" type="submit">Send</button>
+
+              <div class="composer-actions">
+                <button id="btn-stop" class="btn-stop" type="button" style="display: none;">
+                  Stop
+                </button>
+                <button id="btn-send" class="btn-send" type="submit">
+                  Send
+                </button>
+              </div>
             </form>
           </div>
-        </article>
+        </section>
 
-        <aside class="side-panel" aria-label="Resume chat tips">
+        <!-- Candidate Profile Sidebar -->
+        <aside class="side-panel" aria-label="Candidate Overview">
+          <!-- Profile Card -->
           <div class="side-card">
-            <h2>Quick help</h2>
-            <p>
-              Use the chat for resume questions only. The first message explains how
-              to ask, so this rail stays short and out of the way.
-            </p>
+            <h3>Candidate Profile</h3>
+            <div class="profile-details">
+              <div class="profile-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                <span id="profile-email"><a href="mailto:mananijh@gmail.com">mananijh@gmail.com</a></span>
+              </div>
+              <div class="profile-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+                <span id="profile-phone">+49 1767 488 2019</span>
+              </div>
+              <div class="profile-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span id="profile-exp">Total Experience: 5.0 Years</span>
+              </div>
+            </div>
           </div>
 
+          <!-- Skills Cloud -->
           <div class="side-card">
-            <h3>Try asking</h3>
-            <ul>
-              <li>What are the candidate’s strongest skills?</li>
-              <li>Summarize the recent work experience.</li>
-              <li>Which tools appear most often?</li>
-            </ul>
+            <h3>
+              Technical Skills
+              <span id="skills-count" class="badge-count">0</span>
+            </h3>
+            <div id="skills-cloud" class="skills-cloud">
+              <span class="skill-pill">Loading skills...</span>
+            </div>
           </div>
 
+          <!-- Career Highlights -->
           <div class="side-card">
-            <h3>Focus</h3>
-            <div class="side-tags">
-              <span class="side-tag">Experience</span>
-              <span class="side-tag">Skills</span>
-              <span class="side-tag">Projects</span>
-              <span class="side-tag">Certifications</span>
+            <h3>Recent Positions</h3>
+            <div id="experience-list" class="exp-list">
+              <div class="exp-item">
+                <div class="exp-role">AI & Cloud Engineer</div>
+                <div class="exp-company">Enterprise Production Systems</div>
+              </div>
             </div>
           </div>
         </aside>
-      </section>
+      </main>
     </div>
 
     <script>
-      const messagesEl = document.getElementById("messages");
+      const STORAGE_KEY = "resume-chat-history-v2";
+      const messagesContainer = document.getElementById("messages-container");
       const form = document.getElementById("chat-form");
-      const questionEl = document.getElementById("question");
-      const sendBtn = document.getElementById("send-btn");
-      const suggestions = document.querySelectorAll(".suggestion");
-      const STORAGE_KEY = "resume-chat-history";
+      const questionInput = document.getElementById("question-input");
+      const sendBtn = document.getElementById("btn-send");
+      const stopBtn = document.getElementById("btn-stop");
+      const clearBtn = document.getElementById("btn-clear-chat");
+      const suggestionsRow = document.getElementById("suggestions-row");
 
-      const defaultMessages = [
-        {
-          role: "assistant",
-          text: "I can help with the resume right here. Ask about experience, skills, projects, certifications, or education, and I’ll answer from the parsed resume only.",
-        },
-      ];
+      let abortController = null;
 
-      function loadMessages() {
+      const defaultWelcome = {
+        role: "assistant",
+        text: "Hello! I am the official AI representative for Jayesh Manani. I have verified access to his complete background, technical skills, and career history. Feel free to ask about his experience, technical stack, enterprise AI projects, or cloud engineering qualifications.",
+      };
+
+      function loadSavedMessages() {
         try {
           const saved = localStorage.getItem(STORAGE_KEY);
-          if (!saved) {
-            return defaultMessages;
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
           }
-
-          const parsed = JSON.parse(saved);
-          return Array.isArray(parsed) && parsed.length ? parsed : defaultMessages;
-        } catch (error) {
-          return defaultMessages;
-        }
+        } catch (e) {}
+        return [defaultWelcome];
       }
 
-      function saveMessages(items) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      function saveMessages(msgs) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(msgs));
+        } catch (e) {}
       }
 
-      let messages = loadMessages();
+      let chatHistory = loadSavedMessages();
 
-      function escapeHtml(text) {
-        return text
+      // Markdown formatting
+      function escapeHtml(str) {
+        return str
           .replaceAll("&", "&amp;")
           .replaceAll("<", "&lt;")
           .replaceAll(">", "&gt;")
@@ -713,146 +895,119 @@
           .replaceAll("'", "&#39;");
       }
 
-      function formatInlineMarkdown(text) {
+      function formatInline(text) {
         return text
           .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
           .replace(/__(.+?)__/g, "<strong>$1</strong>")
           .replace(/`([^`]+)`/g, "<code>$1</code>")
-          .replace(/\*(.+?)\*/g, "<em>$1</em>")
-          .replace(/\n/g, "<br />");
+          .replace(/\*(.+?)\*/g, "<em>$1</em>");
       }
 
-      function isDividerLine(line) {
-        return /^(-{3,}|_{3,}|\*{3,})$/.test(line.trim());
-      }
-
-      function isTableLine(line) {
-        return /^\|.*\|$/.test(line.trim());
-      }
-
-      function renderMarkdown(text) {
-        const safeLines = text.split(/\r?\n/).map((line) => escapeHtml(line));
+      function renderMarkdown(rawText) {
+        const lines = rawText.split(/\r?\n/).map(escapeHtml);
         const blocks = [];
-        let index = 0;
+        let i = 0;
 
-        function collectList(predicate) {
-          const items = [];
-
-          while (index < safeLines.length && predicate(safeLines[index].trim())) {
-            items.push(safeLines[index].trim());
-            index += 1;
-          }
-
-          return items;
-        }
-
-        while (index < safeLines.length) {
-          const line = safeLines[index].trim();
-
+        while (i < lines.length) {
+          const line = lines[i].trim();
           if (!line) {
-            index += 1;
+            i++;
             continue;
           }
 
-          if (isDividerLine(line)) {
-            blocks.push("<hr />");
-            index += 1;
-            continue;
-          }
-
+          // Heading
           const headingMatch = line.match(/^(#{1,3})\s+(.+)$/);
           if (headingMatch) {
             const level = headingMatch[1].length + 2;
-            blocks.push(`<h${level}>${formatInlineMarkdown(headingMatch[2])}</h${level}>`);
-            index += 1;
+            blocks.push(`<h${level}>${formatInline(headingMatch[2])}</h${level}>`);
+            i++;
             continue;
           }
 
-          const orderedMatch = line.match(/^\d+\.\s+(.+)$/);
-          if (orderedMatch) {
-            const items = collectList((itemLine) => /^\d+\.\s+/.test(itemLine));
-            const listItems = items
-              .map((itemLine) => itemLine.replace(/^\d+\.\s+/, ""))
-              .map((itemLine) => `<li>${formatInlineMarkdown(itemLine)}</li>`)
-              .join("");
-            blocks.push(`<ol>${listItems}</ol>`);
-            continue;
-          }
-
+          // Unordered list
           if (/^([-*•])\s+/.test(line)) {
-            const items = collectList((itemLine) => /^([-*•])\s+/.test(itemLine));
-            const listItems = items
-              .map((itemLine) => itemLine.replace(/^([-*•])\s+/, ""))
-              .map((itemLine) => `<li>${formatInlineMarkdown(itemLine)}</li>`)
-              .join("");
-            blocks.push(`<ul>${listItems}</ul>`);
+            const items = [];
+            while (i < lines.length && /^([-*•])\s+/.test(lines[i].trim())) {
+              items.push(lines[i].trim().replace(/^([-*•])\s+/, ""));
+              i++;
+            }
+            blocks.push(`<ul>${items.map(it => `<li>${formatInline(it)}</li>`).join("")}</ul>`);
             continue;
           }
 
-          if (isTableLine(line)) {
-            const tableLines = [];
-
-            while (index < safeLines.length && isTableLine(safeLines[index].trim())) {
-              tableLines.push(safeLines[index].trim());
-              index += 1;
+          // Ordered list
+          if (/^\d+\.\s+/.test(line)) {
+            const items = [];
+            while (i < lines.length && /^\d+\.\s+/.test(lines[i].trim())) {
+              items.push(lines[i].trim().replace(/^\d+\.\s+/, ""));
+              i++;
             }
+            blocks.push(`<ol>${items.map(it => `<li>${formatInline(it)}</li>`).join("")}</ol>`);
+            continue;
+          }
 
-            const rows = tableLines
-              .map((row) => row.replace(/^\|\s*/, "").replace(/\s*\|$/, ""))
-              .map((row) => row.split(/\s*\|\s*/).map((cell) => formatInlineMarkdown(cell.trim())));
-
-            if (rows.length >= 2) {
+          // Table
+          if (/^\|.*\|$/.test(line)) {
+            const tableLines = [];
+            while (i < lines.length && /^\|.*\|$/.test(lines[i].trim())) {
+              tableLines.push(lines[i].trim());
+              i++;
+            }
+            if (tableLines.length >= 2) {
+              const rows = tableLines.map(row =>
+                row.replace(/^\|\s*/, "").replace(/\s*\|$/, "").split(/\s*\|\s*/).map(cell => formatInline(cell.trim()))
+              );
               const header = rows[0];
-              const bodyRows = rows.slice(1).filter((row) => !row.every((cell) => /^:?-{3,}:?$/.test(cell.replace(/<[^>]+>/g, ""))));
-
-              const headHtml = `<thead><tr>${header.map((cell) => `<th>${cell}</th>`).join("")}</tr></thead>`;
-              const bodyHtml = `<tbody>${bodyRows
-                .map((row) => `<tr>${row.map((cell) => `<td>${cell}</td>`).join("")}</tr>`)
-                .join("")}</tbody>`;
-
-              blocks.push(`<table>${headHtml}${bodyHtml}</table>`);
+              const body = rows.slice(1).filter(r => !r.every(c => /^:?-{3,}:?$/.test(c)));
+              blocks.push(`<table><thead><tr>${header.map(h => `<th>${h}</th>`).join("")}</tr></thead><tbody>${body.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table>`);
               continue;
             }
           }
 
-          const paragraphLines = [line];
-          index += 1;
-
+          // Paragraph
+          const paraLines = [line];
+          i++;
           while (
-            index < safeLines.length &&
-            safeLines[index].trim() &&
-            !isDividerLine(safeLines[index].trim()) &&
-            !/^(#{1,3})\s+/.test(safeLines[index].trim()) &&
-            !/^\d+\.\s+/.test(safeLines[index].trim()) &&
-            !/^([-*•])\s+/.test(safeLines[index].trim())
+            i < lines.length &&
+            lines[i].trim() &&
+            !lines[i].trim().startsWith("#") &&
+            !/^[-*•]/.test(lines[i].trim()) &&
+            !/^\d+\./.test(lines[i].trim()) &&
+            !lines[i].trim().startsWith("|")
           ) {
-            paragraphLines.push(safeLines[index].trim());
-            index += 1;
+            paraLines.push(lines[i].trim());
+            i++;
           }
-
-          const paragraph = paragraphLines.join(" ").replace(/\s+/g, " ");
-          blocks.push(`<p>${formatInlineMarkdown(paragraph)}</p>`);
+          blocks.push(`<p>${formatInline(paraLines.join(" "))}</p>`);
         }
 
         return blocks.join("");
       }
 
       function scrollToBottom() {
-        messagesEl.scrollTop = messagesEl.scrollHeight;
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
       }
 
-      function renderMessages() {
-        messagesEl.innerHTML = messages
-          .map((message) => {
-            const meta = message.role === "assistant" ? "Assistant" : message.role === "user" ? "You" : "System";
-            const content =
-              message.role === "assistant"
-                ? `<div class="message-content">${renderMarkdown(message.text)}</div>`
-                : `<div class="message-content"><p>${escapeHtml(message.text).replaceAll("\n", "<br />")}</p></div>`;
+      function renderChat() {
+        messagesContainer.innerHTML = chatHistory
+          .map((msg, idx) => {
+            const isAssistant = msg.role === "assistant";
+            const senderLabel = isAssistant ? "AI Representative" : msg.role === "user" ? "You" : "System";
+            const contentHtml = isAssistant
+              ? `<div class="bubble-content">${renderMarkdown(msg.text)}</div>`
+              : `<div class="bubble-content"><p>${escapeHtml(msg.text).replaceAll("\n", "<br />")}</p></div>`;
+
+            const copyBtnHtml = isAssistant && msg.text
+              ? `<div class="message-footer"><button class="btn-copy" type="button" onclick="copyMessageText(${idx})">Copy</button></div>`
+              : "";
+
             return `
-              <div class="message ${message.role}">
-                <span class="message-meta">${meta}</span>
-                ${content}
+              <div class="message-wrapper ${msg.role}">
+                <span class="message-sender">${senderLabel}</span>
+                <div class="message-bubble">
+                  ${contentHtml}
+                  ${copyBtnHtml}
+                </div>
               </div>
             `;
           })
@@ -861,123 +1016,220 @@
         scrollToBottom();
       }
 
-      function setLoading(isLoading) {
-        sendBtn.disabled = isLoading;
-        questionEl.disabled = isLoading;
-        suggestions.forEach((button) => {
-          button.disabled = isLoading;
-        });
+      window.copyMessageText = function (idx) {
+        if (chatHistory[idx] && chatHistory[idx].text) {
+          navigator.clipboard.writeText(chatHistory[idx].text).then(() => {
+            const btn = event.target;
+            const orig = btn.textContent;
+            btn.textContent = "Copied!";
+            setTimeout(() => (btn.textContent = orig), 1500);
+          });
+        }
+      };
 
-        sendBtn.textContent = isLoading ? "Sending..." : "Send";
+      function setStreamingState(isStreaming) {
+        if (isStreaming) {
+          sendBtn.style.display = "none";
+          stopBtn.style.display = "inline-flex";
+          questionInput.disabled = true;
+        } else {
+          sendBtn.style.display = "inline-flex";
+          stopBtn.style.display = "none";
+          questionInput.disabled = false;
+          questionInput.focus();
+        }
       }
 
-      function addMessage(role, text, options = {}) {
-        const message = { role, text };
-        messages = [...messages, message];
+      async function sendQuestion(text) {
+        const question = text.trim();
+        if (!question) return;
 
-        if (!options.skipSave) {
-          saveMessages(messages);
-        }
+        // Add user message
+        chatHistory.push({ role: "user", text: question });
+        saveMessages(chatHistory);
+        renderChat();
 
-        renderMessages();
-        return messages.length - 1;
-      }
+        questionInput.value = "";
+        questionInput.style.height = "auto";
+        setStreamingState(true);
 
-      function updateMessage(index, text) {
-        if (!messages[index]) {
-          return;
-        }
+        const assistantMsgIdx = chatHistory.length;
+        chatHistory.push({ role: "assistant", text: "" });
+        renderChat();
 
-        messages[index] = { ...messages[index], text };
-        renderMessages();
-      }
-
-      async function submitQuestion(questionText) {
-        const question = questionText.trim();
-
-        if (!question) {
-          return;
-        }
-
-        addMessage("user", question);
-        questionEl.value = "";
-        setLoading(true);
-        const assistantIndex = addMessage("assistant", "", { skipSave: true });
+        abortController = new AbortController();
 
         try {
+          // Prepare multi-turn history (last 6 messages excluding current user question)
+          const recentHistory = chatHistory
+            .slice(0, assistantMsgIdx - 1)
+            .filter(m => m.role === "user" || m.role === "assistant")
+            .slice(-6)
+            .map(m => ({ role: m.role, content: m.text }));
+
           const response = await fetch("/chat", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ question }),
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ question, history: recentHistory }),
+            signal: abortController.signal,
           });
 
           if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(errorText || `Request failed with status ${response.status}`);
-          }
-
-          if (!response.body) {
-            const fallbackText = await response.text();
-            updateMessage(assistantIndex, fallbackText || "No answer was returned.");
-            saveMessages(messages);
-            return;
+            const err = await response.text();
+            throw new Error(err || `Error ${response.status}`);
           }
 
           const reader = response.body.getReader();
           const decoder = new TextDecoder();
-          let streamedText = "";
+          let streamAccumulator = "";
 
           while (true) {
             const { done, value } = await reader.read();
-
-            if (done) {
-              break;
-            }
-
-            streamedText += decoder.decode(value, { stream: true });
-            updateMessage(assistantIndex, streamedText);
+            if (done) break;
+            streamAccumulator += decoder.decode(value, { stream: true });
+            chatHistory[assistantMsgIdx].text = streamAccumulator;
+            renderChat();
           }
 
-          streamedText += decoder.decode();
-          updateMessage(assistantIndex, streamedText || "No answer was returned.");
-          saveMessages(messages);
-        } catch (error) {
-          messages = messages.slice(0, assistantIndex);
-          addMessage(
-            "system",
-            error instanceof Error && error.message
-              ? error.message
-              : "I could not reach the backend. Check that the FastAPI server is running and that GROQ_API_KEY is set."
-          );
+          streamAccumulator += decoder.decode();
+          chatHistory[assistantMsgIdx].text = streamAccumulator || "No response returned.";
+          saveMessages(chatHistory);
+          renderChat();
+        } catch (err) {
+          if (err.name === "AbortError") {
+            if (!chatHistory[assistantMsgIdx].text) {
+              chatHistory[assistantMsgIdx].text = "[Response generation stopped by user]";
+            }
+          } else {
+            chatHistory.splice(assistantMsgIdx, 1);
+            chatHistory.push({
+              role: "system",
+              text: `Connection or backend issue: ${err.message || "Could not reach the server."}`,
+            });
+          }
+          saveMessages(chatHistory);
+          renderChat();
         } finally {
-          setLoading(false);
-          questionEl.focus();
+          abortController = null;
+          setStreamingState(false);
         }
       }
 
-      suggestions.forEach((button) => {
-        button.addEventListener("click", () => {
-          questionEl.value = button.dataset.prompt || "";
-          questionEl.focus();
-        });
-      });
-
-      form.addEventListener("submit", (event) => {
-        event.preventDefault();
-        submitQuestion(questionEl.value);
-      });
-
-      questionEl.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" && !event.shiftKey) {
-          event.preventDefault();
-          submitQuestion(questionEl.value);
+      // Stop Streaming
+      stopBtn.addEventListener("click", () => {
+        if (abortController) {
+          abortController.abort();
         }
       });
 
-      renderMessages();
-      questionEl.focus();
+      // Clear Chat
+      clearBtn.addEventListener("click", () => {
+        if (confirm("Clear conversation history?")) {
+          chatHistory = [defaultWelcome];
+          saveMessages(chatHistory);
+          renderChat();
+        }
+      });
+
+      // Suggestions click
+      suggestionsRow.addEventListener("click", (e) => {
+        const btn = e.target.closest(".btn-suggestion");
+        if (btn && btn.dataset.prompt) {
+          questionInput.value = btn.dataset.prompt;
+          sendQuestion(btn.dataset.prompt);
+        }
+      });
+
+      // Auto-resize textarea
+      questionInput.addEventListener("input", () => {
+        questionInput.style.height = "auto";
+        questionInput.style.height = Math.min(questionInput.scrollHeight, 160) + "px";
+      });
+
+      questionInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          sendQuestion(questionInput.value);
+        }
+      });
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        sendQuestion(questionInput.value);
+      });
+
+      // Load Profile Data from /api/profile
+      async function loadCandidateProfile() {
+        try {
+          const res = await fetch("/api/profile");
+          if (!res.ok) return;
+          const profile = await res.json();
+
+          if (profile.name) {
+            document.getElementById("candidate-name").textContent = profile.name;
+            const initials = profile.name
+              .split(" ")
+              .map(n => n[0])
+              .join("")
+              .toUpperCase();
+            if (initials) document.getElementById("candidate-avatar").textContent = initials;
+          }
+
+          if (profile.email) {
+            const emailEl = document.getElementById("profile-email");
+            emailEl.innerHTML = `<a href="mailto:${profile.email}">${profile.email}</a>`;
+          }
+
+          if (profile.phone) {
+            document.getElementById("profile-phone").textContent = profile.phone;
+          }
+
+          if (profile.total_experience_years) {
+            document.getElementById("profile-exp").textContent = `Total Experience: ${profile.total_experience_years} Years`;
+            document.getElementById("candidate-sub").textContent = `${profile.total_experience_years}+ Years Exp • Stuttgart, Germany`;
+          }
+
+          // Populate Skills Cloud
+          if (Array.isArray(profile.skills) && profile.skills.length > 0) {
+            document.getElementById("skills-count").textContent = profile.skills.length;
+            const skillsCloud = document.getElementById("skills-cloud");
+            skillsCloud.innerHTML = profile.skills
+              .slice(0, 32)
+              .map(
+                skill => `<button class="skill-pill" type="button" onclick="askAboutSkill('${escapeHtml(skill)}')">${escapeHtml(skill)}</button>`
+              )
+              .join("");
+          }
+
+          // Populate Experiences
+          if (Array.isArray(profile.experiences) && profile.experiences.length > 0) {
+            const expList = document.getElementById("experience-list");
+            expList.innerHTML = profile.experiences
+              .slice(0, 3)
+              .map(
+                exp => `
+                  <div class="exp-item">
+                    <div class="exp-role">${escapeHtml(exp.role || "Engineer")}</div>
+                    <div class="exp-company">${escapeHtml(exp.company || "")} ${exp.duration ? `• ${escapeHtml(exp.duration)}` : ""}</div>
+                  </div>
+                `
+              )
+              .join("");
+          }
+        } catch (e) {
+          console.warn("Could not load candidate profile:", e);
+        }
+      }
+
+      window.askAboutSkill = function (skillName) {
+        const query = `What is Jayesh's experience and background with ${skillName}?`;
+        questionInput.value = query;
+        sendQuestion(query);
+      };
+
+      // Initial render
+      renderChat();
+      loadCandidateProfile();
     </script>
   </body>
 </html>
