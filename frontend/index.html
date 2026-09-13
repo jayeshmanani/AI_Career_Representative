@@ -68,19 +68,19 @@
         width: 100vw;
         max-width: none;
         margin: 0 auto;
-        padding: 16px 18px 18px;
+        padding: 12px 14px 14px;
         overflow: hidden;
       }
 
       .hero {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        gap: 12px 16px;
+        display: flex;
         align-items: center;
-        margin-bottom: 12px;
-        padding: 12px 16px;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 10px;
+        padding: 9px 14px;
         border: 1px solid var(--border);
-        border-radius: 20px;
+        border-radius: 16px;
         background: rgba(9, 15, 27, 0.82);
         box-shadow: var(--shadow);
         backdrop-filter: blur(18px);
@@ -88,8 +88,10 @@
       }
 
       .hero-copy {
-        display: grid;
-        gap: 6px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
       }
 
       .hero-meta {
@@ -103,7 +105,7 @@
         display: inline-flex;
         align-items: center;
         width: fit-content;
-        padding: 8px 12px;
+        padding: 6px 10px;
         border-radius: 999px;
         border: 1px solid rgba(79, 209, 197, 0.25);
         background: rgba(79, 209, 197, 0.08);
@@ -115,46 +117,14 @@
 
       .hero h1 {
         margin: 0;
-        max-width: 20ch;
-        font-size: clamp(1.35rem, 1.7vw, 2rem);
-        line-height: 1.08;
+        font-size: 0.98rem;
+        line-height: 1.35;
         letter-spacing: -0.05em;
-      }
-
-      .hero p {
-        max-width: 86ch;
-        margin: 0;
-        color: var(--muted);
-        font-size: 0.9rem;
-        line-height: 1.45;
+        font-weight: 650;
       }
 
       .status-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        align-items: center;
-        margin-top: 0;
-      }
-
-      .status-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 7px 11px;
-        border: 1px solid var(--border);
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.04);
-        color: var(--muted);
-        font-size: 0.84rem;
-      }
-
-      .status-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: #44e3a5;
-        box-shadow: 0 0 0 6px rgba(68, 227, 165, 0.12);
+        display: none;
       }
 
       .shell {
@@ -166,7 +136,7 @@
 
       .chat-panel {
         border: 1px solid var(--border);
-        border-radius: 24px;
+        border-radius: 22px;
         background: linear-gradient(180deg, var(--panel), rgba(10, 16, 28, 0.96));
         box-shadow: var(--shadow);
         backdrop-filter: blur(18px);
@@ -219,7 +189,7 @@
         display: flex;
         flex-direction: column;
         gap: 12px;
-        padding: 22px 24px 18px;
+        padding: 20px 22px 16px;
         min-height: 0;
         overflow-y: auto;
         scroll-behavior: smooth;
@@ -351,7 +321,7 @@
       }
 
       .composer {
-        padding: 14px 18px 18px;
+        padding: 12px 16px 16px;
         border-top: 1px solid var(--border);
         background: rgba(255, 255, 255, 0.03);
       }
@@ -503,16 +473,12 @@
       @media (max-width: 980px) {
         .page {
           height: 100dvh;
-          padding: 18px;
+          padding: 10px;
         }
 
         .hero {
-          grid-template-columns: 1fr;
-          justify-items: start;
-        }
-
-        .hero-meta {
-          justify-content: flex-start;
+          flex-direction: column;
+          align-items: flex-start;
         }
 
         .chat-panel {
@@ -520,11 +486,11 @@
         }
 
         .messages {
-          padding: 18px 16px 16px;
+          padding: 18px 16px 14px;
         }
 
         .composer {
-          padding: 12px 14px 14px;
+          padding: 10px 12px 12px;
         }
 
         form {
@@ -543,15 +509,15 @@
 
       @media (max-width: 640px) {
         .page {
-          padding: 12px;
+          padding: 8px;
         }
 
         .hero {
-          padding: 10px 12px;
+          padding: 8px 10px;
         }
 
         .chat-header {
-          padding: 12px 14px;
+          padding: 11px 12px;
         }
 
         .messages {
@@ -565,11 +531,7 @@
       <section class="hero">
         <div class="hero-copy">
           <div class="eyebrow">Resume Assistant</div>
-          <h1>Chat with the resume data in a focused, readable workspace.</h1>
-          <p>
-            Ask about experience, skills, projects, certifications, or education.
-            The chat stays on one screen, with the message area taking priority.
-          </p>
+          <h1>Ask about experience, skills, projects, certifications, or education.</h1>
         </div>
         <div class="hero-meta">
           <div class="status-pill"><span class="status-dot"></span><span>Streaming via <strong>/chat</strong></span></div>
@@ -620,7 +582,7 @@
       const defaultMessages = [
         {
           role: "assistant",
-          text: "Ask me anything about the resume. I can summarize experience, list skills, or pull out projects and certifications.",
+          text: "I can help with the resume right here. Ask about experience, skills, projects, certifications, or education, and I’ll answer from the parsed resume only.",
         },
       ];
 
