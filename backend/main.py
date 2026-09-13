@@ -1,5 +1,6 @@
 import json
 import os
+from functools import lru_cache
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -197,11 +198,21 @@ def parse_resume(resume_text):
         "type": "json_object"
     }
     response = client.chat.completions.create(
-        model=model, messages=messages, response_format=response_format)
+        model=model,
+        messages=messages,
+        response_format=response_format,
+        max_completion_tokens=4096,
+    )
     raw_output = response.choices[0].message.content
     data = json.loads(raw_output)
     resume = Resume(**data)
     return resume
+
+
+@lru_cache(maxsize=1)
+def get_resume() -> Resume:
+    resume_text = read_pdf(RESUME_PATH)
+    return parse_resume(resume_text)
 
 
 def read_pdf(file_path: Path):
@@ -228,8 +239,7 @@ def home():
 @app.post("/chat")
 def chat(request: ChatRequest):
     try:
-        resume_text = read_pdf(RESUME_PATH)
-        resume = parse_resume(resume_text)
+        resume = get_resume()
     except Exception as error:
         return JSONResponse(
             status_code=500,
