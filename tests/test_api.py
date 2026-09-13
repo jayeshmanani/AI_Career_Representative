@@ -71,3 +71,16 @@ def test_chat_refuses_out_of_scope():
     assert "only answer questions directly related" in answer or "cannot" in answer or "exclusive" in answer
     assert "def main()" not in response.text
 
+
+def test_chat_transferable_skills_for_unlisted_tech():
+    response = client.post(
+        "/chat",
+        json={"question": "does he know JS?", "history": []},
+    )
+    assert response.status_code == 200
+    answer = response.text.lower()
+    # Must mention that JS is not listed, but highlight foundation in Python / C or transferable learning
+    assert "not" in answer or "explicitly" in answer
+    assert "python" in answer or "c" in answer or "transferable" in answer or "adapt" in answer or "learn" in answer
+
+
